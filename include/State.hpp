@@ -2,10 +2,9 @@
 #define __STATE_H__
 
 #include "SDL2/SDL.h"
+#include "Sprite.hpp"
 
-class Sprite{
-    public: Sprite();
-};
+//TODO tirar daqui
 class Music{
     public: Music();
 };
@@ -14,7 +13,7 @@ class State{
     public:
     State();
     bool QuitRequested();
-    void LoidAssets();
+    void LoadAssets();
     void Update(float dt);
     void Render();
 

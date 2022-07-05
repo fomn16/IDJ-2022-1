@@ -1,7 +1,6 @@
 #include "Game.hpp"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_mixer.h"
-
 #include <iostream>
 
 Game* Game::instance;
@@ -15,7 +14,7 @@ Game::Game(const char* title, int width, int height){
 
     //inicializa a biblioteca SDL
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER)){
-        std::cout<<SDL_GetError();
+        std::cout<<"Erro ao inicializar SDL: "<<SDL_GetError();
         exit(1);
     }
 
@@ -38,21 +37,21 @@ Game::Game(const char* title, int width, int height){
     }
 
     //instancia janela
-    this->window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0);
-    if (this->window == nullptr){
+    window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0);
+    if (window == nullptr){
         std::cout<<"Erro ao criar janela";
         exit(1);
     }
 
     //instancia renderizador
-    this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED);
-    if (this->renderer == nullptr){
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == nullptr){
         std::cout<<"Erro ao instanciar renderizador";
         exit(1);
     }
 
     //instancia state
-    this->state = new State();
+    state = new State();
 
     //atribui this à instancia de Game
     instance = this;
@@ -66,7 +65,7 @@ Game& Game::GetInstance(){
 
  Game::~Game(){
     //TODO Destroi state
-    //this->state->QuitRequested();
+    //state->QuitRequested();
 
     //encerra MIX
     Mix_CloseAudio();
@@ -76,26 +75,26 @@ Game& Game::GetInstance(){
     IMG_Quit();
 
     //destrui renderizador e janela
-    SDL_DestroyRenderer(this->renderer);
-    SDL_DestroyWindow(this->window);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
 
     //encerra SDL
     SDL_Quit();
  }
 
  State& Game::GetState(){
-    return *(this->state);
+    return *(state);
  }
 
  SDL_Renderer* Game::GetRenderer(){
-    return this->renderer;
+    return renderer;
  }
 
  void Game::Run(){
-    while(!this->state->QuitRequested()){
-        this->state->Update(1);            //TODO passar dt
-        this->state->Render();
-        SDL_RenderPresent(this->renderer);
+    while(!state->QuitRequested()){
+        state->Update(1);            //TODO passar dt
+        state->Render();
+        SDL_RenderPresent(renderer);
         SDL_Delay(33);
     }
  }

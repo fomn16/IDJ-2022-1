@@ -2,23 +2,23 @@
 
 //TODO tirar daqui
 Music::Music(){}
-Sprite::Sprite(){}
 
 State::State(){
     QuitRequested();
-    //TODO instanciar o sprite
+    LoadAssets();
 }
 
 bool State::QuitRequested(){
-    return this->quitRequested;
+    return quitRequested;
 }
-void State::LoidAssets(){
+void State::LoadAssets(){
     //Deixe para carregar imagens/fontes/músicas às suas variáveis aqui sempre que for possível
+    bg.Open("assets/img/ocean.jpg");        //carregando o sprite de background
 }
 void State::Update(float dt){
     if(SDL_QuitRequested())
-        this->quitRequested = true;
+        quitRequested = true;
 }
 void State::Render(){
-    //TODO Chamar render background
+    bg.Render(0,0);
 }

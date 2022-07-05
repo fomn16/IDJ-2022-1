@@ -6,7 +6,7 @@
 
 #include "Game.hpp"
 int main (int argc, char** argv) {
-
+    
     /* Inicializa todas as bibliotecas 
     SDL_Init(SDL_INIT_EVERYTHING);
     IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF);
