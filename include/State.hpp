@@ -1,8 +1,13 @@
+#ifndef __STATE_H__
+#define __STATE_H__
+
+#include "SDL2/SDL.h"
+
 class Sprite{
-    Sprite();
+    public: Sprite();
 };
 class Music{
-    Music();
+    public: Music();
 };
 
 class State{
@@ -18,3 +23,5 @@ class State{
     Music music;
     bool quitRequested;
 };  
+
+#endif
