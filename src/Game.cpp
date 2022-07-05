@@ -93,7 +93,7 @@ Game& Game::GetInstance(){
 
  void Game::Run(){
     while(!this->state->QuitRequested()){
-        this->state->Update(1f);            //TODO passar dt
+        this->state->Update(1);            //TODO passar dt
         this->state->Render();
         SDL_RenderPresent(this->renderer);
         SDL_Delay(33);
