@@ -1,6 +1,7 @@
 #include "Sprite.hpp"
 #include "Game.hpp"
 #include <iostream>
+#include <fstream>
 
 Sprite::Sprite(){
     texture = nullptr;
@@ -21,11 +22,15 @@ void Sprite::Open(const char* file){
         SDL_DestroyTexture(texture);
     texture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), file);
     if (texture == nullptr){
-        std::cout<<"Erro ao carregar sprite: "<<SDL_GetError();
+        std::ofstream fw("logs.txt", std::ofstream::out);
+        fw<<"Erro ao carregar sprite: "<<SDL_GetError();
+        fw.close();
         exit(1);
     }
     if (SDL_QueryTexture(texture, nullptr, nullptr, &(width), &(height))){
-        std::cout<<"Erro ao carregar sprite: "<<SDL_GetError();
+        std::ofstream fw("logs.txt", std::ofstream::out);
+        fw<<"Erro ao carregar sprite: "<<SDL_GetError();
+        fw.close();
         exit(1);
     }
     SetClip(0,0,width, height);
@@ -49,7 +54,9 @@ void Sprite::Render (int x, int y){
                    texture,
                    &(clipRect),
                    &dstRect)){
-        std::cout<<"Erro ao renderizar sprite: "<<SDL_GetError();
+        std::ofstream fw("logs.txt", std::ofstream::out);
+        fw<<"Erro ao renderizar sprite: "<<SDL_GetError();
+        fw.close();
         exit(1);
     }
 }
