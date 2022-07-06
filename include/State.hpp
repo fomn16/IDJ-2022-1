@@ -3,11 +3,7 @@
 
 #include "SDL2/SDL.h"
 #include "Sprite.hpp"
-
-//TODO tirar daqui
-class Music{
-    public: Music();
-};
+#include "Music.hpp"
 
 class State{
     public:

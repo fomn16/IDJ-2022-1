@@ -1,8 +1,5 @@
 #include "State.hpp"
 
-//TODO tirar daqui
-Music::Music(){}
-
 State::State(){
     QuitRequested();
     LoadAssets();
@@ -13,7 +10,13 @@ bool State::QuitRequested(){
 }
 void State::LoadAssets(){
     //Deixe para carregar imagens/fontes/músicas às suas variáveis aqui sempre que for possível
-    bg.Open("assets/img/ocean.jpg");        //carregando o sprite de background
+
+    //carregando o sprite de background
+    bg.Open("assets/img/ocean.jpg");
+
+    //carregando e dando play na música 
+    music.Open("assets/audio/stageState.ogg");
+    music.Play();
 }
 void State::Update(float dt){
     if(SDL_QuitRequested())

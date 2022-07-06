@@ -59,7 +59,7 @@ Game::Game(const char* title, int width, int height){
 
 Game& Game::GetInstance(){
     if(instance == nullptr)
-        new Game("joguinho",250,250);
+        new Game("Felipe Neves",1024,600);
     return *instance;
 }
 
@@ -92,6 +92,7 @@ Game& Game::GetInstance(){
 
  void Game::Run(){
     while(!state->QuitRequested()){
+        std::cout << "a";
         state->Update(1);            //TODO passar dt
         state->Render();
         SDL_RenderPresent(renderer);
