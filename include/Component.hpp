@@ -3,6 +3,9 @@
 
 #include "GameObject.hpp"
 #include <string>
+
+class GameObject;
+
 class Component{
     public:
         Component(GameObject& associatd);
