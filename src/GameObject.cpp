@@ -1,6 +1,5 @@
 #include "GameObject.hpp"
 
-
 GameObject::GameObject(){
     isDead = false;
 }

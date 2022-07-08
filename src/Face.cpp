@@ -1,5 +1,6 @@
 #include "Face.hpp"
 #include "Sound.hpp"
+
 Face::Face(GameObject& associated) : Component::Component(associated){
     hitpoints = 30;
 }
@@ -7,7 +8,7 @@ Face::Face(GameObject& associated) : Component::Component(associated){
 void Face::Damage(int damage){
     hitpoints -= damage;
     if (hitpoints <= 0){
-        Sound * sound = (Sound*) associated.GetComponent("Sound");
+        Sound* sound = (Sound*) associated.GetComponent("Sound");
         if(sound != nullptr){
            sound->Play();
         }

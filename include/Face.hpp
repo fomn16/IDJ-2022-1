@@ -6,7 +6,7 @@
 
 #include <string>
 
-class Face : Component{
+class Face : public Component{
     public:
         Face(GameObject& associated);
 

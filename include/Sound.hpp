@@ -8,7 +8,7 @@
 #include "SDL2/SDL_mixer.h"
 #include <string>
 
-class Sound : Component{
+class Sound : public Component{
     public:
         Sound(GameObject& associated);
         Sound(GameObject& associated, std::string file);

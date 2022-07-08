@@ -6,3 +6,11 @@ Rect::Rect(float _x, float _y, float _w, float _h){
     w = _w;
     h = _h;
 }
+
+bool Rect::Contains(Vec2 pos){    
+    return (    pos.x >= x && 
+                pos.x <= x + w &&
+                pos.y >= y &&
+                pos.y <= y + h
+            );
+}

@@ -30,6 +30,12 @@
         "fstream": "cpp",
         "sstream": "cpp",
         "vector": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "array": "cpp",
+        "bit": "cpp",
+        "memory": "cpp",
+        "optional": "cpp",
+        "ranges": "cpp",
+        "tuple": "cpp"
     }
 }

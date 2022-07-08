@@ -18,6 +18,11 @@ Sound::~Sound(){
 
 void Sound::Play(int times){
     channel = Mix_PlayChannel(-1, chunk, times - 1);
+    if(channel == -1){
+         std::ofstream fw("logs.txt", std::ofstream::out);
+        fw<<"Erro tocando som: " <<SDL_GetError();
+        fw.close();
+    }
 }
 
 void Sound::Stop(){
