@@ -3,12 +3,11 @@
 #include <iostream>
 #include <fstream>
 
-Sprite::Sprite(){
+Sprite::Sprite(GameObject& associated) : Component::Component(associated){
     texture = nullptr;
 }
 
-Sprite::Sprite(const char* file){
-    texture = nullptr;
+Sprite::Sprite(GameObject& associated, const char* file) : Sprite::Sprite(associated){
     Open(file);
 }
 
@@ -41,12 +40,15 @@ void Sprite::SetClip (int x, int y, int w, int h){
     clipRect.y = y;
     clipRect.w = w;
     clipRect.h = h;
+
+    associated.box.w = w;
+    associated.box.h = h;
 }
 
-void Sprite::Render (int x, int y){
+void Sprite::Render (){
     SDL_Rect dstRect;
-    dstRect.x = x;
-    dstRect.y = y;
+    dstRect.x = associated.box.x;
+    dstRect.y = associated.box.y;
     dstRect.w = clipRect.w;
     dstRect.h = clipRect.h;
 
@@ -71,4 +73,12 @@ int Sprite::GetHeight(){
 
 bool Sprite::IsOpen(){
     return texture != nullptr;
+}
+
+void Sprite::Update(float dt){
+
+}
+
+bool Sprite::Is(std::string type){
+    return !type.compare("Sprite");
 }

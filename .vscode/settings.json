@@ -28,6 +28,14 @@
         "streambuf": "cpp",
         "system_error": "cpp",
         "fstream": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "vector": "cpp",
+        "utility": "cpp",
+        "array": "cpp",
+        "bit": "cpp",
+        "memory": "cpp",
+        "optional": "cpp",
+        "ranges": "cpp",
+        "tuple": "cpp"
     }
 }
