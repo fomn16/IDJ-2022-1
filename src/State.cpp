@@ -31,7 +31,7 @@ void State::LoadAssets(){
 
     //carregando e dando play na música 
     music.Open("assets/audio/stageState.ogg");
-    //music.Play();
+    music.Play();
 }
 void State::Update(float dt){
     Input();
