@@ -2,6 +2,7 @@
 #define __GAME_H__
 #include "SDL2/SDL.h"
 #include "State.hpp"
+#include <string>
 
 class Game{
     private:
@@ -9,7 +10,7 @@ class Game{
     SDL_Renderer* renderer;
     static Game* instance;
     State* state;
-    Game (const char* title, int width, int height);
+    Game (std::string title, int width, int height);
 
     public:
     ~Game();
