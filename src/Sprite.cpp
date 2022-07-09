@@ -46,9 +46,13 @@ void Sprite::SetClip (int x, int y, int w, int h){
 }
 
 void Sprite::Render (){
+    Render(associated.box.x, associated.box.y);
+}
+
+void Sprite::Render (int x, int y){
     SDL_Rect dstRect;
-    dstRect.x = associated.box.x;
-    dstRect.y = associated.box.y;
+    dstRect.x = x;
+    dstRect.y = y;
     dstRect.w = clipRect.w;
     dstRect.h = clipRect.h;
 
