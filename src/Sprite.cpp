@@ -7,7 +7,7 @@ Sprite::Sprite(GameObject& associated) : Component::Component(associated){
     texture = nullptr;
 }
 
-Sprite::Sprite(GameObject& associated, const char* file) : Sprite::Sprite(associated){
+Sprite::Sprite(GameObject& associated, std::string file) : Sprite::Sprite(associated){
     Open(file);
 }
 
@@ -16,10 +16,10 @@ Sprite::~Sprite(){
         SDL_DestroyTexture(texture);
 }
 
-void Sprite::Open(const char* file){
+void Sprite::Open(std::string file){
     if(texture != nullptr)
         SDL_DestroyTexture(texture);
-    texture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), file);
+    texture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), file.c_str());
     if (texture == nullptr){
         std::ofstream fw("logs.txt", std::ofstream::out);
         fw<<"Erro ao carregar sprite: "<<SDL_GetError();

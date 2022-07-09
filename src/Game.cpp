@@ -6,7 +6,7 @@
 
 Game* Game::instance = nullptr;
 
-Game::Game(const char* title, int width, int height){
+Game::Game(std::string title, int width, int height){
     //verifica se o game foi inicializado duas vezes
     if(Game::instance != nullptr){
         std::ofstream fw("logs.txt", std::ofstream::out);
@@ -50,7 +50,7 @@ Game::Game(const char* title, int width, int height){
     }
 
     //instancia janela
-    window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0);
+    window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0);
     if (window == nullptr){
         std::ofstream fw("logs.txt", std::ofstream::out);
         fw<<"Erro ao criar janela";
