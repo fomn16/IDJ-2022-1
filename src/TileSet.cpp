@@ -1,6 +1,6 @@
 #include "TileSet.hpp"
 
-TileSet::TileSet(GameObject& associated, int tileWidth, int tileHeight, std::string file) : tileSet(associated, file){
+TileSet::TileSet(GameObject& associated, int tileWidth, int tileHeight, std::string file) : Component::Component(associated), tileSet(associated, file){
     this->tileWidth = tileWidth;
     this->tileHeight = tileHeight;
 
@@ -10,10 +10,10 @@ TileSet::TileSet(GameObject& associated, int tileWidth, int tileHeight, std::str
     nTiles = rows * columns;
 }
 
-void TileSet::RenderTile(unsigned int index, float x, float y){
-    if(index < nTiles){
-        tileSet.SetClip(index % columns, index / rows, tileWidth, tileHeight);
-        tileSet.Render((int)x, (int)y);
+void TileSet::RenderTile(int index, int x, int y){
+    if(index < (int)nTiles){
+        tileSet.SetClip((index % columns) * tileWidth, (index / columns) * tileHeight, tileWidth, tileHeight);
+        tileSet.Render(x, y);
     }
 }  
 
@@ -24,3 +24,10 @@ int TileSet::GetTileWidth(){
 int TileSet::GetTileHeight(){
     return tileHeight;
 }
+
+bool TileSet::Is(std::string type){
+    return !type.compare("TileSet");
+}
+
+void TileSet::Render(){}
+void TileSet::Update(float dt){}

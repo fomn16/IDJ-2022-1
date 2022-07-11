@@ -6,12 +6,17 @@
 #include "Sprite.hpp"
 #include "GameObject.hpp"
 
-class TileSet{
+//Escolhi fazer com que TileSet seja um componente
+class TileSet : public Component{
     public:
         TileSet(GameObject& associated, int tileWidth, int tileHeight, std::string file);
-        void RenderTile(unsigned int index, float x, float y);
+        void RenderTile(int index, int x, int y);
         int GetTileWidth();
         int GetTileHeight();
+
+        bool Is(std::string type);
+        void Render();
+        void Update(float dt);
     private:
         Sprite tileSet;
 
