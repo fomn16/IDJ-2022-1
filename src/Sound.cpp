@@ -1,4 +1,5 @@
 #include "Sound.hpp"
+#include "Resources.hpp"
 #include <fstream>
 
 Sound::Sound(GameObject& associated) : Component::Component(associated){
@@ -12,7 +13,6 @@ Sound::Sound(GameObject& associated, std::string file) : Sound::Sound(associated
 Sound::~Sound(){
     if(chunk != nullptr){
         Stop();
-        Mix_FreeChunk(chunk);
     }
 }
 
@@ -32,13 +32,7 @@ void Sound::Stop(){
 }
 
 void Sound::Open(std::string file){
-    chunk = Mix_LoadWAV(file.c_str());
-    if(chunk == nullptr){
-        std::ofstream fw("logs.txt", std::ofstream::out);
-        fw<<"Erro ao carregar som: "<<SDL_GetError();
-        fw.close();
-        exit(1);
-    }
+    chunk = Resources::GetSound(file);
 }
 
 bool Sound::IsOpen(){

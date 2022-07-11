@@ -2,6 +2,8 @@
 #include "Vec2.hpp"
 #include "Face.hpp"
 #include "Sound.hpp"
+#include "TileMap.hpp"
+#include "TileSet.hpp"
 #include <math.h>
 
 State::State(){
@@ -18,8 +20,8 @@ bool State::QuitRequested(){
 }
 void State::LoadAssets(){
     //Deixe para carregar imagens/fontes/músicas às suas variáveis aqui sempre que for possível
-
-     //criando objeto background
+	
+    //criando objeto background
     GameObject* background = new GameObject();
 
     //carregando sprite background
@@ -28,6 +30,20 @@ void State::LoadAssets(){
 
     //salvando no object array
     objectArray.emplace_back(background);
+
+	//criando objeto tileMap
+	GameObject* tileMapObject = new GameObject();
+
+	//criando tileSet
+	TileSet* tileSet = new TileSet(*tileMapObject, 64, 64, "assets/img/tileset.png");
+	tileMapObject->AddComponent(tileSet);
+
+	//criando componente tileMap
+	TileMap* tileMap = new TileMap(*tileMapObject, "assets/map/tileMap.txt", tileSet);
+	tileMapObject->AddComponent(tileMap);
+
+	//salvando no object array
+	objectArray.emplace_back(tileMapObject);
 
     //carregando e dando play na música 
     music.Open("assets/audio/stageState.ogg");
