@@ -2,6 +2,7 @@
 #include "Game.hpp"
 #include <iostream>
 #include <fstream>
+#include "Resources.hpp"
 
 Sprite::Sprite(GameObject& associated) : Component::Component(associated){
     texture = nullptr;
@@ -12,26 +13,18 @@ Sprite::Sprite(GameObject& associated, std::string file) : Sprite::Sprite(associ
 }
 
 Sprite::~Sprite(){
-    if(texture != nullptr)
-        SDL_DestroyTexture(texture);
 }
 
 void Sprite::Open(std::string file){
-    if(texture != nullptr)
-        SDL_DestroyTexture(texture);
-    texture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), file.c_str());
-    if (texture == nullptr){
-        std::ofstream fw("logs.txt", std::ofstream::out);
-        fw<<"Erro ao carregar sprite: "<<SDL_GetError();
-        fw.close();
-        exit(1);
-    }
+    texture = Resources::GetImage(file);
+    
     if (SDL_QueryTexture(texture, nullptr, nullptr, &(width), &(height))){
         std::ofstream fw("logs.txt", std::ofstream::out);
         fw<<"Erro ao carregar sprite: "<<SDL_GetError();
         fw.close();
         exit(1);
     }
+    
     SetClip(0,0,width, height);
 }
 

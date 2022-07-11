@@ -36,6 +36,7 @@
         "memory": "cpp",
         "optional": "cpp",
         "ranges": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "unordered_map": "cpp"
     }
 }

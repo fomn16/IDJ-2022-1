@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include "Resources.hpp"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_mixer.h"
 #include <iostream>
@@ -111,4 +112,8 @@ Game& Game::GetInstance(){
         SDL_RenderPresent(renderer);
         SDL_Delay(33);
     }
+
+    Resources::ClearImages();
+    Resources::ClearMusics();
+    Resources::ClearSounds();
  }
