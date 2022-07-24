@@ -69,6 +69,8 @@ Game::Game(std::string title, int width, int height){
     }
     //instancia state
     state = new State();
+
+    inputManager = &InputManager::GetInstance();
 }
 
 Game& Game::GetInstance(){
@@ -107,6 +109,7 @@ Game& Game::GetInstance(){
 
  void Game::Run(){
     while(!state->QuitRequested()){
+        inputManager->Update();
         state->Update(1);            //TODO passar dt
         state->Render();
         SDL_RenderPresent(renderer);

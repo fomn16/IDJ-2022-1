@@ -2,6 +2,7 @@
 #define __GAME_H__
 #include "SDL2/SDL.h"
 #include "State.hpp"
+#include "InputManager.hpp"
 #include <string>
 
 class Game{
@@ -10,6 +11,7 @@ class Game{
     SDL_Renderer* renderer;
     static Game* instance;
     State* state;
+    InputManager* inputManager;                         //adicionando referência evitando GetInstace todo frame
     Game (std::string title, int width, int height);
 
     public:
