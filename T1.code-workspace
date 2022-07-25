@@ -1,0 +1,48 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.tcc": "cpp",
+			"cctype": "cpp",
+			"clocale": "cpp",
+			"cmath": "cpp",
+			"compare": "cpp",
+			"concepts": "cpp",
+			"cstdint": "cpp",
+			"cstdio": "cpp",
+			"cstdlib": "cpp",
+			"cwchar": "cpp",
+			"exception": "cpp",
+			"initializer_list": "cpp",
+			"iosfwd": "cpp",
+			"limits": "cpp",
+			"new": "cpp",
+			"string": "cpp",
+			"string_view": "cpp",
+			"type_traits": "cpp",
+			"typeinfo": "cpp",
+			"cwctype": "cpp",
+			"iostream": "cpp",
+			"istream": "cpp",
+			"ostream": "cpp",
+			"stdexcept": "cpp",
+			"streambuf": "cpp",
+			"system_error": "cpp",
+			"fstream": "cpp",
+			"sstream": "cpp",
+			"vector": "cpp",
+			"utility": "cpp",
+			"array": "cpp",
+			"bit": "cpp",
+			"memory": "cpp",
+			"optional": "cpp",
+			"ranges": "cpp",
+			"tuple": "cpp",
+			"unordered_map": "cpp"
+		}
+	}
+}

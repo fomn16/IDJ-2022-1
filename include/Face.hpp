@@ -3,6 +3,7 @@
 
 #include "Component.hpp"
 #include "GameObject.hpp"
+#include "InputManager.hpp"
 
 #include <string>
 
@@ -17,5 +18,6 @@ class Face : public Component{
         bool Is(std::string type);
     private:
         int hitpoints;
+        InputManager* inputManager;
 };
 #endif

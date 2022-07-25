@@ -69,6 +69,11 @@ Game::Game(std::string title, int width, int height){
     }
     //instancia state
     state = new State();
+
+    inputManager = &InputManager::GetInstance();
+
+    frameStart = (float)SDL_GetTicks()/1000;
+    dt = 0.016;
 }
 
 Game& Game::GetInstance(){
@@ -107,7 +112,8 @@ Game& Game::GetInstance(){
 
  void Game::Run(){
     while(!state->QuitRequested()){
-        state->Update(1);            //TODO passar dt
+        inputManager->Update();
+        state->Update(dt);
         state->Render();
         SDL_RenderPresent(renderer);
         SDL_Delay(33);
@@ -116,4 +122,15 @@ Game& Game::GetInstance(){
     Resources::ClearImages();
     Resources::ClearMusics();
     Resources::ClearSounds();
+ }
+
+ 
+ void Game::CalculateDeltaTime(){
+    float currTime = (float)SDL_GetTicks()/1000;
+    dt = currTime - frameStart;
+    frameStart = currTime;
+ }
+
+ float Game::GetdeltaTime(){
+    return dt;
  }
