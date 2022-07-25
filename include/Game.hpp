@@ -14,11 +14,16 @@ class Game{
     InputManager* inputManager;                         //adicionando referência evitando GetInstace todo frame
     Game (std::string title, int width, int height);
 
+    int frameStart = 0;
+    float dt = 0;
+    void CalculateDeltaTime();
+
     public:
     ~Game();
     void Run();
     SDL_Renderer* GetRenderer();
     State& GetState();
     static Game& GetInstance();
+    float GetdeltaTime();
 };
 #endif

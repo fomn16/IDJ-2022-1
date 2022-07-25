@@ -49,6 +49,11 @@ void Sprite::Render (int x, int y){
     dstRect.w = clipRect.w;
     dstRect.h = clipRect.h;
 
+    if(associated.camera != nullptr){
+        dstRect.x -= associated.camera->pos.x;
+        dstRect.y -= associated.camera->pos.y;
+    }
+
     if(SDL_RenderCopy(Game::GetInstance().GetRenderer(),
                    texture,
                    &(clipRect),

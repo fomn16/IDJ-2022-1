@@ -34,7 +34,7 @@ void State::LoadAssets(){
     objectArray.emplace_back(background);
 
 	//criando objeto tileMap
-	GameObject* tileMapObject = new GameObject();
+	GameObject* tileMapObject = new GameObject(&camera);
 
 	//criando tileSet
 	TileSet* tileSet = new TileSet(*tileMapObject, 64, 64, "assets/img/tileset.png");
@@ -52,6 +52,7 @@ void State::LoadAssets(){
     music.Play();
 }
 void State::Update(float dt){
+    camera.Update(dt);
     if(inputManager->QuitRequested() || inputManager->KeyPress(ESCAPE_KEY))
 		quitRequested = true;
 
@@ -78,9 +79,9 @@ void State::Render(){
 
 void State::AddObject(int mouseX, int mouseY){
     //criando objeto inimigo
-    GameObject* inimigo = new GameObject();
-    inimigo->box.x = mouseX;
-    inimigo->box.y = mouseY;
+    GameObject* inimigo = new GameObject(&camera);
+    inimigo->box.x = mouseX + camera.pos.x;
+    inimigo->box.y = mouseY + camera.pos.y;
 
     //carregando sprite inimigo
     Sprite* spriteInimigo = new Sprite(*inimigo, "assets/img/penguinface.png");

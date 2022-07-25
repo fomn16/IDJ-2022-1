@@ -1,7 +1,7 @@
 #include "Vec2.hpp"
 #include <math.h>
 
-Vec2::Vec2(float _x = 0, float _y = 0){
+Vec2::Vec2(float _x, float _y){
     x = _x;
     y = _y;
 }

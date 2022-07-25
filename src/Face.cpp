@@ -19,11 +19,20 @@ void Face::Damage(int damage){
 
 void Face::Update(float dt){
     if(inputManager->MousePress(LEFT_MOUSE_BUTTON)){
-        if(associated.box.Contains( {(float)inputManager->GetMouseX(), (float)inputManager->GetMouseY()} ) ) {
-            // Aplica dano
-            Damage(std::rand() % 10 + 10);
+        if(associated.camera != nullptr){
+            if(associated.box.Contains( {(float)inputManager->GetMouseX() + associated.camera->pos.x, (float)inputManager->GetMouseY() + associated.camera->pos.y} ) ) {
+                // Aplica dano
+                Damage(std::rand() % 10 + 10);
+            }
         }
+        else{
+            if(associated.box.Contains( {(float)inputManager->GetMouseX(), (float)inputManager->GetMouseY()} ) ) {
+                // Aplica dano
+                Damage(std::rand() % 10 + 10);
+            }
+        } 
     }
+    //atualiza a posição de seu objeto
 }
 
 void Face::Render(){

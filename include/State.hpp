@@ -6,6 +6,7 @@
 #include "Music.hpp"
 #include "InputManager.hpp"
 #include "GameObject.hpp"
+#include "Camera.hpp"
 
 #include <memory>
 #include <vector>
@@ -26,6 +27,7 @@ class State{
         bool quitRequested;
         std::vector<std::unique_ptr<GameObject>> objectArray;
         InputManager* inputManager;                         //adicionando referência evitando GetInstace todo frame
+        Camera camera;
 };  
 
 #endif

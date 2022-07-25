@@ -4,6 +4,11 @@ GameObject::GameObject(){
     isDead = false;
 }
 
+GameObject::GameObject(Camera* camera) : GameObject(){
+    isDead = false;
+    this->camera = camera;
+}
+
 GameObject::~GameObject(){
     components.clear();
 }
