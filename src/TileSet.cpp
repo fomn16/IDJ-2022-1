@@ -31,3 +31,4 @@ bool TileSet::Is(std::string type){
 
 void TileSet::Render(){}
 void TileSet::Update(float dt){}
+void TileSet::Start(){}

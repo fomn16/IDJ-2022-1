@@ -35,6 +35,8 @@ void GameObject::RequestDelete(){
 
 void GameObject::AddComponent(Component* cpt){
     components.push_back((std::unique_ptr<Component>)cpt);
+    if(started)
+        cpt->Start();
 }
 
 void GameObject::RemoveComponent(Component* cpt){
@@ -52,4 +54,11 @@ Component* GameObject::GetComponent(std::string type){
         }
     }
     return nullptr;
+}
+
+void GameObject::Start(){
+    for(int i = 0; i < (int)components.size(); i++) {
+        components[i]->Start();
+    }
+    started = true;
 }

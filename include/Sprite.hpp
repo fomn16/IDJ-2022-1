@@ -22,6 +22,7 @@ class Sprite : public Component{
 
         void Update(float dt);
         bool Is(std::string type);
+        void Start();
     private:
         SDL_Texture* texture;
         int width;

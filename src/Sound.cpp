@@ -39,14 +39,12 @@ bool Sound::IsOpen(){
     return chunk!=nullptr;
 }
 
-void Sound::Update(float dt){
+void Sound::Update(float dt){}
 
-}
-
-void Sound::Render(){
-
-}
+void Sound::Render(){}
 
 bool Sound::Is(std::string type){   
     return !type.compare("Sound");
 }
+
+void Sound::Start(){} 

@@ -4,6 +4,7 @@
 #include "Sound.hpp"
 #include "TileMap.hpp"
 #include "TileSet.hpp"
+#include "Alien.hpp"
 #include <math.h>
 
 State::State(){
@@ -31,7 +32,7 @@ void State::LoadAssets(){
     background->AddComponent(spriteBackground);
 
     //salvando no object array
-    objectArray.emplace_back(background);
+    this->AddObject(background);
 
 	//criando objeto tileMap
 	GameObject* tileMapObject = new GameObject(&camera);
@@ -45,12 +46,28 @@ void State::LoadAssets(){
 	tileMapObject->AddComponent(tileMap);
 
 	//salvando no object array
-	objectArray.emplace_back(tileMapObject);
+    this->AddObject(tileMapObject);
 
     //carregando e dando play na música 
     music.Open("assets/audio/stageState.ogg");
     music.Play();
+
+    //Criando objeto Alien
+    GameObject* alienObject = new GameObject(&camera);
+
+    //criando alien
+    Alien* alien = new Alien(*alienObject, 10);
+    alienObject->AddComponent(alien);
+
+    //quando o sprite é carregado, A classe Sprite corrige 
+    //a posição para que a box tenha seu centro na sua posição inicial 
+    alienObject->box.x = 512;
+    alienObject->box.y = 300;
+
+    //salvando no object array
+    this->AddObject(alienObject);
 }
+
 void State::Update(float dt){
     camera.Update(dt);
     if(inputManager->QuitRequested() || inputManager->KeyPress(ESCAPE_KEY))
@@ -95,5 +112,34 @@ void State::AddObject(int mouseX, int mouseY){
     Face* compInimigo = new Face(*inimigo);
     inimigo->AddComponent(compInimigo);
 
-    objectArray.emplace_back(inimigo);
+    this->AddObject(inimigo);
+}
+
+void State::Start(){
+    LoadAssets();
+    for (int i = 0; i < (int)objectArray.size(); i++){
+        objectArray[i]->Start();
+    }
+    started = true;
+}
+
+std::weak_ptr<GameObject> State::AddObject(GameObject* go){
+    std::shared_ptr<GameObject> pointer(go);
+    objectArray.push_back(pointer);
+    if(started)
+        pointer->Start(); 
+    std::weak_ptr<GameObject> weak_pointer(pointer);
+    return weak_pointer;
+}
+
+std::weak_ptr<GameObject> State::GetObjectPtr(GameObject* go){
+     for (int i = 0; i < (int)objectArray.size(); i++){
+        if(objectArray[i].get() == go)
+        {
+            std::weak_ptr<GameObject> weak_pointer(objectArray[i]);
+            return weak_pointer;
+        }
+    }
+    std::weak_ptr<GameObject> weak_pointer;
+    return weak_pointer;
 }

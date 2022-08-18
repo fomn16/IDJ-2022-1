@@ -17,6 +17,7 @@ class TileSet : public Component{
         bool Is(std::string type);
         void Render();
         void Update(float dt);
+        void Start();
     private:
         Sprite tileSet;
 

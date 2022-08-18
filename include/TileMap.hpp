@@ -22,6 +22,7 @@ class TileMap : public Component{
 
         bool Is(std::string type);
         void Update(float dt);
+        void Start();
 
     private:
         std::vector<int> tileMatrix;

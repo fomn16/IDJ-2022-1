@@ -34,6 +34,15 @@ void Sprite::SetClip (int x, int y, int w, int h){
     clipRect.w = w;
     clipRect.h = h;
 
+    if(associated.camera != nullptr){
+        if(associated.box.w || associated.box.h){
+            associated.box.x += associated.box.w/2;
+            associated.box.y += associated.box.h/2;
+        }
+        associated.box.x -= w/2;
+        associated.box.y -= h/2;
+    }
+
     associated.box.w = w;
     associated.box.h = h;
 }
@@ -84,3 +93,5 @@ void Sprite::Update(float dt){
 bool Sprite::Is(std::string type){
     return !type.compare("Sprite");
 }
+
+void Sprite::Start(){}
