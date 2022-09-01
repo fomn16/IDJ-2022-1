@@ -25,9 +25,12 @@ class GameObject{
         void AddComponent(Component* cpt);
         void RemoveComponent(Component* cpt);
         Component* GetComponent(std::string type);
-        Camera* camera = nullptr;
+        void Start();
 
+        Camera* camera = nullptr;
         Rect box;
+        bool started = false;
+        double angleDeg = 0;
 
     private:
         std::vector<std::unique_ptr<Component>> components;

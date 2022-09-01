@@ -4,12 +4,16 @@
 #include "Sound.hpp"
 #include "TileMap.hpp"
 #include "TileSet.hpp"
+#include "Alien.hpp"
 #include <math.h>
+
+
+#include <iostream>
+#include <fstream>
 
 State::State(){
 	inputManager = &InputManager::GetInstance();
     QuitRequested();
-    LoadAssets();
 }
 
 State::~State(){
@@ -28,29 +32,41 @@ void State::LoadAssets(){
 
     //carregando sprite background
     Sprite* spriteBackground = new Sprite(*background, "assets/img/ocean.jpg");
-    background->AddComponent(spriteBackground);
 
     //salvando no object array
-    objectArray.emplace_back(background);
+    this->AddObject(background);
 
 	//criando objeto tileMap
 	GameObject* tileMapObject = new GameObject(&camera);
 
 	//criando tileSet
 	TileSet* tileSet = new TileSet(*tileMapObject, 64, 64, "assets/img/tileset.png");
-	tileMapObject->AddComponent(tileSet);
 
 	//criando componente tileMap
 	TileMap* tileMap = new TileMap(*tileMapObject, "assets/map/tileMap.txt", tileSet);
-	tileMapObject->AddComponent(tileMap);
 
 	//salvando no object array
-	objectArray.emplace_back(tileMapObject);
+    this->AddObject(tileMapObject);
 
     //carregando e dando play na música 
     music.Open("assets/audio/stageState.ogg");
     music.Play();
+
+    //Criando objeto Alien
+    GameObject* alienObject = new GameObject(&camera);
+
+    //criando alien
+    Alien* alien = new Alien(*alienObject, 10);
+
+    //quando o sprite é carregado, A classe Sprite corrige 
+    //a posição para que a box tenha seu centro na sua posição inicial 
+    alienObject->box.x = 512;
+    alienObject->box.y = 300;
+
+    //salvando no object array
+    this->AddObject(alienObject);
 }
+
 void State::Update(float dt){
     camera.Update(dt);
     if(inputManager->QuitRequested() || inputManager->KeyPress(ESCAPE_KEY))
@@ -85,15 +101,41 @@ void State::AddObject(int mouseX, int mouseY){
 
     //carregando sprite inimigo
     Sprite* spriteInimigo = new Sprite(*inimigo, "assets/img/penguinface.png");
-    inimigo->AddComponent(spriteInimigo);
 
     //carregando som inimigo
     Sound* somInimigo = new Sound(*inimigo, "assets/audio/boom.wav");
-    inimigo->AddComponent(somInimigo);
 
     //carregando comportamento inimigo
     Face* compInimigo = new Face(*inimigo);
-    inimigo->AddComponent(compInimigo);
 
-    objectArray.emplace_back(inimigo);
+    this->AddObject(inimigo);
+}
+
+void State::Start(){
+    LoadAssets();
+    for (int i = 0; i < (int)objectArray.size(); i++){
+        objectArray[i]->Start();
+    }
+    started = true;
+}
+
+std::weak_ptr<GameObject> State::AddObject(GameObject* go){
+    std::shared_ptr<GameObject> pointer(go);
+    objectArray.push_back(pointer);
+    if(started)
+        pointer->Start(); 
+    std::weak_ptr<GameObject> weak_pointer(pointer);
+    return weak_pointer;
+}
+
+std::weak_ptr<GameObject> State::GetObjectPtr(GameObject* go){
+     for (int i = 0; i < (int)objectArray.size(); i++){
+        if(objectArray[i].get() == go)
+        {
+            std::weak_ptr<GameObject> weak_pointer(objectArray[i]);
+            return weak_pointer;
+        }
+    }
+    std::weak_ptr<GameObject> weak_pointer;
+    return weak_pointer;
 }

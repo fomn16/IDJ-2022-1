@@ -42,7 +42,8 @@
 			"optional": "cpp",
 			"ranges": "cpp",
 			"tuple": "cpp",
-			"unordered_map": "cpp"
+			"unordered_map": "cpp",
+			"deque": "cpp"
 		}
 	}
 }

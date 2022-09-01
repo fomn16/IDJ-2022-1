@@ -75,3 +75,4 @@ bool TileMap::Is(std::string type){
 }
 
 void TileMap::Update(float dt){}
+void TileMap::Start(){}

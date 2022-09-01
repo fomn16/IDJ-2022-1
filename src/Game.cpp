@@ -111,6 +111,7 @@ Game& Game::GetInstance(){
  }
 
  void Game::Run(){
+    state->Start();
     while(!state->QuitRequested()){
         inputManager->Update();
         state->Update(dt);
