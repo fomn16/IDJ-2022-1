@@ -3,11 +3,11 @@
 #include "Minion.hpp"
 #include "Game.hpp"
 #include <math.h>
+#include <stdlib.h>
 
 Alien::Alien(GameObject& associated, int nMinions) : Component(associated), hp(30), nMinions(nMinions){
     inputManager = &InputManager::GetInstance();
     Sprite* sprite = new Sprite(associated, "assets/img/alien.png");
-    associated.AddComponent(sprite);
 }
 
 Alien::~Alien(){
@@ -20,13 +20,13 @@ void Alien::Start(){
     for (int i = 0; i < nMinions; i++){
         GameObject* mO = new GameObject(associated.camera);
         Minion* m = new Minion(*mO, weak, i*arcOffset);
-        mO->AddComponent(m);
         minionArray.push_back(Game::GetInstance().GetState().AddObject(mO));
     }
 }
 
 void Alien::Update(float dt){
     //verificando se houve ação
+    associated.angleDeg -= 0.1;
     bool pressed = false, shoot = false, move = false;
     if(inputManager->MousePress(LEFT_MOUSE_BUTTON)){
         pressed = true;
@@ -55,15 +55,15 @@ void Alien::Update(float dt){
 
     //executando ações pendentes
     if(!taskQueue.empty()){
-        Action front = taskQueue.front();
-        switch (front.type)
+        Action action = taskQueue.front();
+        switch (action.type)
         {
             case MOVE:
             {
-                Vec2 dir = (front.pos - Vec2(this->associated.box.x, this->associated.box.y)).getClampedOrZero(ALIEN_SPEED);
+                Vec2 dir = (action.pos - Vec2(this->associated.box.x, this->associated.box.y)).getClampedOrZero(ALIEN_SPEED);
                 if(dir.isZero()){
-                    associated.box.x = front.pos.x;
-                    associated.box.y = front.pos.y;
+                    associated.box.x = action.pos.x;
+                    associated.box.y = action.pos.y;
                     taskQueue.pop();
                 }
                 else{
@@ -74,8 +74,25 @@ void Alien::Update(float dt){
             }
             case SHOOT:
             {
-                //depois implementar tiro
                 taskQueue.pop();
+
+                int minion = 0;
+                float dist = 0, t_dist = 0;
+                for(int i = 0; i < nMinions; i++){
+                    GameObject* temp_minion = minionArray[i].lock().get();
+                    t_dist = (Vec2(     temp_minion->box.x - temp_minion->box.w/2,
+                                        temp_minion->box.y - temp_minion->box.h/2                                        
+                                    ) - action.pos).Mag();
+                    if(i == 0 || dist > t_dist){
+                        dist = t_dist;
+                        minion = i;
+                    }
+                }
+
+                std::shared_ptr<GameObject> temp_minion = minionArray[minion].lock();
+                Minion* realPtrMinion = (Minion *)temp_minion->GetComponent("Minion");
+
+                realPtrMinion->Shoot(action.pos);
                 break;
             }
         }

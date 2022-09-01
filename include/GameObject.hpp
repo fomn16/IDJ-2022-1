@@ -30,6 +30,7 @@ class GameObject{
         Camera* camera = nullptr;
         Rect box;
         bool started = false;
+        double angleDeg = 0;
 
     private:
         std::vector<std::unique_ptr<Component>> components;

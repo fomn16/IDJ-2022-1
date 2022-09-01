@@ -7,10 +7,13 @@
 #include "Alien.hpp"
 #include <math.h>
 
+
+#include <iostream>
+#include <fstream>
+
 State::State(){
 	inputManager = &InputManager::GetInstance();
     QuitRequested();
-    LoadAssets();
 }
 
 State::~State(){
@@ -29,7 +32,6 @@ void State::LoadAssets(){
 
     //carregando sprite background
     Sprite* spriteBackground = new Sprite(*background, "assets/img/ocean.jpg");
-    background->AddComponent(spriteBackground);
 
     //salvando no object array
     this->AddObject(background);
@@ -39,11 +41,9 @@ void State::LoadAssets(){
 
 	//criando tileSet
 	TileSet* tileSet = new TileSet(*tileMapObject, 64, 64, "assets/img/tileset.png");
-	tileMapObject->AddComponent(tileSet);
 
 	//criando componente tileMap
 	TileMap* tileMap = new TileMap(*tileMapObject, "assets/map/tileMap.txt", tileSet);
-	tileMapObject->AddComponent(tileMap);
 
 	//salvando no object array
     this->AddObject(tileMapObject);
@@ -57,7 +57,6 @@ void State::LoadAssets(){
 
     //criando alien
     Alien* alien = new Alien(*alienObject, 10);
-    alienObject->AddComponent(alien);
 
     //quando o sprite é carregado, A classe Sprite corrige 
     //a posição para que a box tenha seu centro na sua posição inicial 
@@ -102,15 +101,12 @@ void State::AddObject(int mouseX, int mouseY){
 
     //carregando sprite inimigo
     Sprite* spriteInimigo = new Sprite(*inimigo, "assets/img/penguinface.png");
-    inimigo->AddComponent(spriteInimigo);
 
     //carregando som inimigo
     Sound* somInimigo = new Sound(*inimigo, "assets/audio/boom.wav");
-    inimigo->AddComponent(somInimigo);
 
     //carregando comportamento inimigo
     Face* compInimigo = new Face(*inimigo);
-    inimigo->AddComponent(compInimigo);
 
     this->AddObject(inimigo);
 }

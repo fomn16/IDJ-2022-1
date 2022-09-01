@@ -6,6 +6,8 @@
 
 Sprite::Sprite(GameObject& associated) : Component::Component(associated){
     texture = nullptr;
+    scale.x = 1;
+    scale.y = 1;
 }
 
 Sprite::Sprite(GameObject& associated, std::string file) : Sprite::Sprite(associated){
@@ -55,18 +57,22 @@ void Sprite::Render (int x, int y){
     SDL_Rect dstRect;
     dstRect.x = x;
     dstRect.y = y;
-    dstRect.w = clipRect.w;
-    dstRect.h = clipRect.h;
+    dstRect.w = clipRect.w*scale.x;
+    dstRect.h = clipRect.h*scale.y;
 
     if(associated.camera != nullptr){
         dstRect.x -= associated.camera->pos.x;
         dstRect.y -= associated.camera->pos.y;
     }
 
-    if(SDL_RenderCopy(Game::GetInstance().GetRenderer(),
-                   texture,
-                   &(clipRect),
-                   &dstRect)){
+    if(SDL_RenderCopyEx(
+                    Game::GetInstance().GetRenderer(),
+                    texture,
+                    &(clipRect),
+                    &dstRect,
+                    associated.angleDeg,
+                    nullptr,
+                    SDL_FLIP_NONE)){
         std::ofstream fw("logs.txt", std::ofstream::out);
         fw<<"Erro ao renderizar sprite: "<<SDL_GetError();
         fw.close();
@@ -75,11 +81,11 @@ void Sprite::Render (int x, int y){
 }
 
 int Sprite::GetWidth(){
-    return width;
+    return width*scale.x;
 }
 
 int Sprite::GetHeight(){
-    return height;
+    return height*scale.y;
 }
 
 bool Sprite::IsOpen(){
@@ -95,3 +101,24 @@ bool Sprite::Is(std::string type){
 }
 
 void Sprite::Start(){}
+
+void Sprite::SetScaleX(float scaleX, float scaleY){
+    if(scaleX != 0){
+        float oldx = scale.x;
+        scale.x = scaleX;
+        float newBoxW =  associated.box.w*scale.x/oldx;
+        associated.box.x += (associated.box.w - newBoxW)/2;
+        associated.box.w = newBoxW;
+    }
+    if(scaleY != 0){
+        float oldy = scale.y;
+        scale.y = scaleY;
+        float newBoxH =  associated.box.h*scale.y/oldy;
+        associated.box.y += (associated.box.h - newBoxH)/2;
+        associated.box.h = newBoxH;
+    }
+}
+
+Vec2 Sprite::GetScale(){
+    return scale;
+}

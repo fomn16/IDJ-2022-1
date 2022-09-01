@@ -20,6 +20,9 @@ class Sprite : public Component{
         int GetHeight();
         bool IsOpen();
 
+        void SetScaleX(float scaleX, float scaleY);
+        Vec2 GetScale();
+
         void Update(float dt);
         bool Is(std::string type);
         void Start();
@@ -28,6 +31,8 @@ class Sprite : public Component{
         int width;
         int height;
         SDL_Rect clipRect;
+
+        Vec2 scale;
 };
 
 #endif
