@@ -10,10 +10,11 @@
 class Sprite : public Component{
     public: 
         Sprite(GameObject& associated);
-        Sprite(GameObject& associated, std::string file);
+        Sprite(GameObject& associated, std::string file, int frameCount = 1, float frameTime=1);
         ~Sprite();
         void Open(std::string file);
         void SetClip (int x, int y, int w, int h);
+        void SetClipByIndex (int id);            //adicionado para organizar troca de frames
         void Render ();
         void Render (int x, int y);
         int GetWidth();
@@ -26,6 +27,10 @@ class Sprite : public Component{
         void Update(float dt);
         bool Is(std::string type);
         void Start();
+
+        void SetFrame(int frame);
+        void SetFrameCount(int frameCount);
+        void SetFrameTime(float frameTime);
     private:
         SDL_Texture* texture;
         int width;
@@ -33,6 +38,11 @@ class Sprite : public Component{
         SDL_Rect clipRect;
 
         Vec2 scale;
+
+        int frameCount;
+        int currentFrame;
+        float timeElapsed;
+        float frameTime;
 };
 
 #endif
