@@ -7,7 +7,7 @@
 
 Alien::Alien(GameObject& associated, int nMinions) : Component(associated), hp(30), nMinions(nMinions){
     inputManager = &InputManager::GetInstance();
-    Sprite* sprite = new Sprite(associated, "assets/img/alien.png");
+    new Sprite(associated, "assets/img/alien.png");
 }
 
 Alien::~Alien(){
@@ -19,7 +19,7 @@ void Alien::Start(){
     float arcOffset = (2 * M_PI)/nMinions;
     for (int i = 0; i < nMinions; i++){
         GameObject* mO = new GameObject(associated.camera);
-        Minion* m = new Minion(*mO, weak, i*arcOffset);
+        new Minion(*mO, weak, i*arcOffset);
         minionArray.push_back(Game::GetInstance().GetState().AddObject(mO));
     }
 }
@@ -39,8 +39,8 @@ void Alien::Update(float dt){
 
     //efileirando a ação na posição correta
     if(pressed){
-        float x = (float)inputManager->GetMouseX() - associated.box.w/2;
-        float y = (float)inputManager->GetMouseY() - associated.box.h/2;
+        float x = (float)inputManager->GetMouseX();
+        float y = (float)inputManager->GetMouseY();
         
         if(associated.camera != nullptr){
             x += associated.camera->pos.x;
@@ -60,10 +60,9 @@ void Alien::Update(float dt){
         {
             case MOVE:
             {
-                Vec2 dir = (action.pos - Vec2(this->associated.box.x, this->associated.box.y)).getClampedOrZero(ALIEN_SPEED);
+                Vec2 dir = (action.pos - this->associated.box.GetCenter()).getClampedOrZero(ALIEN_SPEED);
                 if(dir.isZero()){
-                    associated.box.x = action.pos.x;
-                    associated.box.y = action.pos.y;
+                    associated.box.SetCenter(action.pos);
                     taskQueue.pop();
                 }
                 else{
@@ -80,9 +79,7 @@ void Alien::Update(float dt){
                 float dist = 0, t_dist = 0;
                 for(int i = 0; i < nMinions; i++){
                     GameObject* temp_minion = minionArray[i].lock().get();
-                    t_dist = (Vec2(     temp_minion->box.x - temp_minion->box.w/2,
-                                        temp_minion->box.y - temp_minion->box.h/2                                        
-                                    ) - action.pos).Mag();
+                    t_dist = (temp_minion->box.GetCenter() - action.pos).Mag();
                     if(i == 0 || dist > t_dist){
                         dist = t_dist;
                         minion = i;

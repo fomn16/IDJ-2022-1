@@ -10,7 +10,7 @@
 class Sprite : public Component{
     public: 
         Sprite(GameObject& associated);
-        Sprite(GameObject& associated, std::string file, int frameCount = 1, float frameTime=1);
+        Sprite(GameObject& associated, std::string file, int frameCount = 1, float frameTime=0.1);
         ~Sprite();
         void Open(std::string file);
         void SetClip (int x, int y, int w, int h);

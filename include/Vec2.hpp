@@ -9,6 +9,7 @@ class Vec2{
         Vec2 operator-(const Vec2& v) const;
         Vec2 operator*(const float f) const;
         Vec2 operator/(const float f) const;
+        Vec2 operator*(const Vec2& v) const;
         float x, y;
 
         //retorna vec2 com a mesma direção e sentido e módulo max, caso seu módulo seja

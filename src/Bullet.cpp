@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include<math.h>
 
-Bullet::Bullet(GameObject& associated, float angle, float speed, int damage, float maxDistance, std::string sprite)
+Bullet::Bullet(GameObject& associated, float angle, float speed, int damage, float maxDistance, std::string sprite, int frameCount)
 : Component(associated), speed(speed, 0), speedMag(speed), damage(damage), distanceLeft(maxDistance)
 {
-    Sprite* bulletSprite = new Sprite(associated, sprite);
+    new Sprite(associated, sprite, frameCount, 0.01);
     this->speed = this->speed.GetRotated(angle);
     associated.angleDeg = angle*180/M_PI;
 }

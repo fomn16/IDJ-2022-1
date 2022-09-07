@@ -7,7 +7,7 @@
 
 class Bullet : public Component{
     public:
-        Bullet(GameObject& associated, float angle, float speed, int damage, float maxDistance, std::string sprite);
+        Bullet(GameObject& associated, float angle, float speed, int damage, float maxDistance, std::string sprite, int frameCount = 1);
         void Update(float dt);
         void Render();
         bool Is(std::string type);

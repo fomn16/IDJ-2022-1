@@ -44,17 +44,7 @@ void Sprite::SetClip (int x, int y, int w, int h){
     clipRect.w = w;
     clipRect.h = h;
 
-    if(associated.camera != nullptr){
-        if(associated.box.w || associated.box.h){
-            associated.box.x += associated.box.w/2;
-            associated.box.y += associated.box.h/2;
-        }
-        associated.box.x -= w/2;
-        associated.box.y -= h/2;
-    }
-
-    associated.box.w = w;
-    associated.box.h = h;
+    associated.box.SetDims(Vec2(w,h)*scale, associated.camera != nullptr);
 }
 
 void Sprite::Render (){
@@ -65,8 +55,8 @@ void Sprite::Render (int x, int y){
     SDL_Rect dstRect;
     dstRect.x = x;
     dstRect.y = y;
-    dstRect.w = clipRect.w*scale.x;
-    dstRect.h = clipRect.h*scale.y;
+    dstRect.w = associated.box.w;
+    dstRect.h = associated.box.h;
 
     if(associated.camera != nullptr){
         dstRect.x -= associated.camera->pos.x;
@@ -101,6 +91,8 @@ bool Sprite::IsOpen(){
 }
 
 void Sprite::Update(float dt){
+    if (frameCount == 1)    //evitando computações desnecessárias
+        return;
     timeElapsed += dt;
     if(timeElapsed > frameTime){
         timeElapsed = 0;
@@ -117,20 +109,10 @@ bool Sprite::Is(std::string type){
 void Sprite::Start(){}
 
 void Sprite::SetScaleX(float scaleX, float scaleY){
-    if(scaleX != 0){
-        float oldx = scale.x;
-        scale.x = scaleX;
-        float newBoxW =  associated.box.w*scale.x/oldx;
-        associated.box.x += (associated.box.w - newBoxW)/2;
-        associated.box.w = newBoxW;
-    }
-    if(scaleY != 0){
-        float oldy = scale.y;
-        scale.y = scaleY;
-        float newBoxH =  associated.box.h*scale.y/oldy;
-        associated.box.y += (associated.box.h - newBoxH)/2;
-        associated.box.h = newBoxH;
-    }
+        scale.x = scaleX ? scaleX : scale.x;
+        scale.y = scaleY ? scaleY : scale.y;
+
+        associated.box.SetDims(Vec2(width*scale.x/frameCount, height*scale.y));
 }
 
 Vec2 Sprite::GetScale(){
