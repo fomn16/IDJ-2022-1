@@ -3,6 +3,10 @@
 #include <math.h>
 #include "Bullet.hpp"
 #include "Game.hpp"
+#include "Collider.hpp"
+#include "Bullet.hpp"
+#include "PenguinBody.hpp"
+#include <iostream>
 
 PenguinCannon::PenguinCannon(GameObject& associated, std::weak_ptr<GameObject> penguinBody) : 
 Component(associated),
@@ -11,28 +15,33 @@ angle(0)
 {
     new Sprite(associated, "assets/img/cubngun.png");
     inputManager = &InputManager::GetInstance();
+    new Collider(associated, Vec2(0.5,0.5));
 }
 
 void PenguinCannon::Update(float dt){
-    if(pbody.lock().get()==nullptr)
+    timer.Update(dt);
+    if(pbody.lock().get() == nullptr){
         associated.RequestDelete();
+        return;
+    }
 
     associated.box.SetCenter(pbody.lock()->box.GetCenter());
     Vec2 d = inputManager->GetMousePos() - associated.box.GetCenter() + associated.camera->pos;
     angle = atan2(d.y, d.x);
-    associated.angleDeg = angle*180/M_PI;
+    associated.angleDeg = angle;
 
     if(inputManager->MousePress(LEFT_MOUSE_BUTTON))
         Shoot();
 }
-
-void PenguinCannon::Render(){}
 
 bool PenguinCannon::Is(std::string type){
     return !type.compare("PenguinCannon");
 }
 
 void PenguinCannon::Shoot(){
+    if(timer.Get()<PCANNON_COOLDOWN)
+        return;
+    timer.Restart();
     GameObject* bulletGo = new GameObject(associated.camera);
     Vec2 offset = Vec2(associated.box.w/2 + 10, 0).GetRotated(angle);
     bulletGo->box.x = associated.box.x + offset.x;
@@ -41,9 +50,15 @@ void PenguinCannon::Shoot(){
     bulletGo->box.h = associated.box.h;
 
 
-    new Bullet(*bulletGo, angle, 500, 2, 500, "assets/img/penguinbullet.png", 4);
+    new Bullet(*bulletGo, false, angle, 500, PCANNON_DAMAGE, 500, "assets/img/penguinbullet.png", 4);
     Game::GetInstance().GetState().AddObject(bulletGo);
 }
 
-void PenguinCannon::Start(){}
 PenguinCannon::~PenguinCannon(){}
+
+void PenguinCannon::NotifyCollision(GameObject& other){
+    Bullet* b = (Bullet*)other.GetComponent("Bullet");
+    if( b != nullptr && b->targetsPlayer){
+        ((PenguinBody*)pbody.lock()->GetComponent("PenguinBody"))->ApplyDamage(b->GetDamage());
+    }
+}

@@ -21,8 +21,6 @@ class TileMap : public Component{
         int GetDepth();
 
         bool Is(std::string type);
-        void Update(float dt);
-        void Start();
 
     private:
         std::vector<int> tileMatrix;

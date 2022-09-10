@@ -3,16 +3,15 @@
 
 #include "GameObject.hpp"
 #include "Vec2.hpp"
-#include "InputManager.hpp"
+#include "Timer.hpp"
 
 #include <string>
 #include <queue>
 #include <vector>
 
 #define ALIEN_SPEED 5
-
-
-enum ActionType{MOVE, SHOOT};
+#define ALIEN_REST_TIME 0.2
+#define ALIEN_HP 24
 
 class Alien : public Component
 {
@@ -21,21 +20,21 @@ class Alien : public Component
         ~Alien();
         void Start();
         void Update(float dt);
-        void Render();
         bool Is(std::string type);
+        void NotifyCollision(GameObject& other);
+
+        static int alienCount;
     private:
-        class Action{
-            public:
-                Action(ActionType type, float x, float y);
-                ActionType type;
-                Vec2 pos;
-        };
+        
+        Timer restTimer;
+        Vec2 destination;
+        enum AlienState{MOVING, RESTING};
+        AlienState state;
 
         Vec2 speed;
         int hp, nMinions;
-        std::queue<Action> taskQueue;
         std::vector<std::weak_ptr<GameObject>> minionArray;
-        InputManager* inputManager;
+
 };
 
 #endif

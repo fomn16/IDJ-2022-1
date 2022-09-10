@@ -6,3 +6,7 @@ Component::Component(GameObject& associated) : associated(associated){
 }
 Component::~Component(){
 }
+void Component::Update(float dt){}
+void Component::Render(){}
+void Component::Start(){}
+void Component::NotifyCollision(GameObject& other){}

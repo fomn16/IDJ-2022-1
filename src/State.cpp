@@ -7,7 +7,8 @@
 #include "Alien.hpp"
 #include <math.h>
 #include "PenguinBody.hpp"
-
+#include "Collision.hpp"
+#include "Collider.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -93,7 +94,31 @@ void State::Update(float dt){
             objectArray.erase(objectArray.begin() + i);
         }
     }
-}
+
+    //calculando colisões
+
+    std::vector<std::shared_ptr<GameObject>> colliderObjects;
+    for (int i = 0; i < (int)objectArray.size(); i++){
+        if(objectArray[i]->GetComponent("Collider") != nullptr)
+            colliderObjects.push_back(objectArray[i]);
+    }
+
+    Rect rect1,rect2;
+    float angle1,angle2;
+    for (int i = 0; i < (int)colliderObjects.size() - 1; i++){
+        rect1 = ((Collider*)colliderObjects[i]->GetComponent("Collider"))->box;
+        angle1 = colliderObjects[i]->angleDeg;
+        for (int j = i+1; j < (int)colliderObjects.size(); j++){
+            rect2 = ((Collider*)colliderObjects[j]->GetComponent("Collider"))->box;
+            angle2 = colliderObjects[j]->angleDeg;
+            if(Collision::IsColliding(rect1, rect2, angle1, angle2))
+            {
+                colliderObjects[i]->NotifyCollision(*colliderObjects[j].get());
+                colliderObjects[j]->NotifyCollision(*colliderObjects[i].get());
+            }
+        }
+    }
+ }
 
 void State::Render(){
     for (int i = 0; i < (int)objectArray.size(); i++){

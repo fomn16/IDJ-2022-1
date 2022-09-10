@@ -27,6 +27,8 @@ class GameObject{
         Component* GetComponent(std::string type);
         void Start();
 
+        void NotifyCollision(GameObject& other);
+
         Camera* camera = nullptr;
         Rect box;
         bool started = false;

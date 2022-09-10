@@ -12,9 +12,12 @@ Sprite::Sprite(GameObject& associated) : Component::Component(associated){
     currentFrame = 0;
 }
 
-Sprite::Sprite(GameObject& associated, std::string file, int frameCount, float frameTime) : Sprite::Sprite(associated){
+Sprite::Sprite(GameObject& associated, std::string file, 
+        int frameCount, float frameTime, float secondsToSelfDestruct) : Sprite::Sprite(associated){
     this->frameCount = frameCount;
     this->frameTime = frameTime;
+    this->secondsToSelfDestruct = secondsToSelfDestruct;
+
     Open(file);
 }
 
@@ -68,7 +71,7 @@ void Sprite::Render (int x, int y){
                     texture,
                     &(clipRect),
                     &dstRect,
-                    associated.angleDeg,
+                    associated.angleDeg*180/M_PI,
                     nullptr,
                     SDL_FLIP_NONE)){
         std::ofstream fw("logs.txt", std::ofstream::out);
@@ -91,6 +94,11 @@ bool Sprite::IsOpen(){
 }
 
 void Sprite::Update(float dt){
+    selfDestructCount.Update(dt);
+    if(secondsToSelfDestruct != 0 && selfDestructCount.Get() >= secondsToSelfDestruct){
+        associated.RequestDelete();
+        return;
+    }
     if (frameCount == 1)    //evitando computações desnecessárias
         return;
     timeElapsed += dt;
@@ -105,8 +113,6 @@ void Sprite::Update(float dt){
 bool Sprite::Is(std::string type){
     return !type.compare("Sprite");
 }
-
-void Sprite::Start(){}
 
 void Sprite::SetScaleX(float scaleX, float scaleY){
         scale.x = scaleX ? scaleX : scale.x;

@@ -4,13 +4,14 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
 #include "Component.hpp"
+#include "Timer.hpp"
 
 #include <string>
 
 class Sprite : public Component{
     public: 
         Sprite(GameObject& associated);
-        Sprite(GameObject& associated, std::string file, int frameCount = 1, float frameTime=0.1);
+        Sprite(GameObject& associated, std::string file, int frameCount = 1, float frameTime=0.1, float secondsToSelfDestruct = 0);
         ~Sprite();
         void Open(std::string file);
         void SetClip (int x, int y, int w, int h);
@@ -26,7 +27,6 @@ class Sprite : public Component{
 
         void Update(float dt);
         bool Is(std::string type);
-        void Start();
 
         void SetFrame(int frame);
         void SetFrameCount(int frameCount);
@@ -43,6 +43,9 @@ class Sprite : public Component{
         int currentFrame;
         float timeElapsed;
         float frameTime;
+
+        Timer selfDestructCount;
+        float secondsToSelfDestruct;
 };
 
 #endif

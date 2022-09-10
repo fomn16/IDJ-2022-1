@@ -28,7 +28,3 @@ int TileSet::GetTileHeight(){
 bool TileSet::Is(std::string type){
     return !type.compare("TileSet");
 }
-
-void TileSet::Render(){}
-void TileSet::Update(float dt){}
-void TileSet::Start(){}

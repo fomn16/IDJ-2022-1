@@ -35,12 +35,6 @@ void Face::Update(float dt){
     //atualiza a posição de seu objeto
 }
 
-void Face::Render(){
-
-}
-
 bool Face::Is(std::string type){
     return !type.compare("Face");
 }
-
-void Face::Start(){}
