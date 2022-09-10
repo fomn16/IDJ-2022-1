@@ -73,6 +73,3 @@ int TileMap::GetDepth(){
 bool TileMap::Is(std::string type){
     return !type.compare("TileMap");
 }
-
-void TileMap::Update(float dt){}
-void TileMap::Start(){}

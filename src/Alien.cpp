@@ -4,14 +4,23 @@
 #include "Game.hpp"
 #include <math.h>
 #include <stdlib.h>
+#include "Collider.hpp"
+#include "Bullet.hpp"
+#include "GameObject.hpp"
+#include "Sound.hpp"
+#include "PenguinBody.hpp"
 
-Alien::Alien(GameObject& associated, int nMinions) : Component(associated), hp(30), nMinions(nMinions){
-    inputManager = &InputManager::GetInstance();
-    Sprite* sprite = new Sprite(associated, "assets/img/alien.png");
+int Alien::alienCount = 0;
+
+Alien::Alien(GameObject& associated, int nMinions) : Component(associated), state(RESTING), hp(ALIEN_HP), nMinions(nMinions){
+    new Sprite(associated, "assets/img/alien.png");
+    new Collider(associated, Vec2(0.5,0.5));
+    Alien::alienCount++;
 }
 
 Alien::~Alien(){
     minionArray.clear();
+    Alien::alienCount--;
 }
 
 void Alien::Start(){
@@ -19,98 +28,83 @@ void Alien::Start(){
     float arcOffset = (2 * M_PI)/nMinions;
     for (int i = 0; i < nMinions; i++){
         GameObject* mO = new GameObject(associated.camera);
-        Minion* m = new Minion(*mO, weak, i*arcOffset);
+        new Minion(*mO, weak, i*arcOffset);
         minionArray.push_back(Game::GetInstance().GetState().AddObject(mO));
     }
 }
 
 void Alien::Update(float dt){
-    //verificando se houve ação
-    associated.angleDeg -= 0.1;
-    bool pressed = false, shoot = false, move = false;
-    if(inputManager->MousePress(LEFT_MOUSE_BUTTON)){
-        pressed = true;
-        shoot = true;
-    }
-    if(inputManager->MousePress(RIGHT_MOUSE_BUTTON)){
-        pressed = true;
-        move = true;
+    //morte
+    if(hp <= 0){
+        GameObject* explosion = new GameObject(associated.camera);
+        new Sprite(*explosion, "assets/img/aliendeath.png", 4, 0.1, 0.8);
+        Sound* s = new Sound(*explosion, "assets/audio/boom.wav");
+        s->Play();
+        explosion->box.SetCenter(associated.box.GetCenter());
+        Game::GetInstance().GetState().AddObject(explosion);
+
+        associated.RequestDelete();
     }
 
-    //efileirando a ação na posição correta
-    if(pressed){
-        float x = (float)inputManager->GetMouseX() - associated.box.w/2;
-        float y = (float)inputManager->GetMouseY() - associated.box.h/2;
-        
-        if(associated.camera != nullptr){
-            x += associated.camera->pos.x;
-            y += associated.camera->pos.y;
+    //limpando minionArray
+    for (int i = 0; i < (int)minionArray.size(); i++){
+        if(minionArray[i].expired() || minionArray[i].lock().get() == nullptr){
+            minionArray.erase(minionArray.begin() + i);
         }
-
-        if(shoot)
-            taskQueue.emplace(Action(SHOOT, x, y));
-        if(move)
-            taskQueue.emplace(Action(MOVE, x, y));
     }
+    
+    associated.angleDeg -= 0.05; //girando alien um pouco
 
-    //executando ações pendentes
-    if(!taskQueue.empty()){
-        Action action = taskQueue.front();
-        switch (action.type)
-        {
-            case MOVE:
-            {
-                Vec2 dir = (action.pos - Vec2(this->associated.box.x, this->associated.box.y)).getClampedOrZero(ALIEN_SPEED);
-                if(dir.isZero()){
-                    associated.box.x = action.pos.x;
-                    associated.box.y = action.pos.y;
-                    taskQueue.pop();
-                }
-                else{
-                    associated.box.x += dir.x;
-                    associated.box.y += dir.y;
-                }
-                break;
+    if(PenguinBody::player == nullptr)
+        return;
+    restTimer.Update(dt);
+
+    switch (state)
+    {
+        case RESTING:
+            if(restTimer.Get() >= ALIEN_REST_TIME){
+                destination = PenguinBody::player->AssociatedPosition();
+                state = MOVING;
             }
-            case SHOOT:
-            {
-                taskQueue.pop();
-
-                int minion = 0;
+            break;
+        
+        case MOVING:
+            Vec2 dir = (destination - this->associated.box.GetCenter()).getClampedOrZero(ALIEN_SPEED);
+            if(dir.isZero()){
+                destination = PenguinBody::player->AssociatedPosition();
+                int minion = -1;
                 float dist = 0, t_dist = 0;
-                for(int i = 0; i < nMinions; i++){
-                    GameObject* temp_minion = minionArray[i].lock().get();
-                    t_dist = (Vec2(     temp_minion->box.x - temp_minion->box.w/2,
-                                        temp_minion->box.y - temp_minion->box.h/2                                        
-                                    ) - action.pos).Mag();
-                    if(i == 0 || dist > t_dist){
+                for(int i = 0; i < (int)minionArray.size(); i++){
+                    GameObject* temp_minion = minionArray[i].lock().get(); 
+                    t_dist = (temp_minion->box.GetCenter() - destination).Mag();
+                    if(minion == -1 || dist > t_dist){
                         dist = t_dist;
                         minion = i;
                     }
                 }
 
-                std::shared_ptr<GameObject> temp_minion = minionArray[minion].lock();
-                Minion* realPtrMinion = (Minion *)temp_minion->GetComponent("Minion");
-
-                realPtrMinion->Shoot(action.pos);
-                break;
+                if(minion != -1){
+                    std::shared_ptr<GameObject> temp_minion = minionArray[minion].lock();
+                    Minion* realPtrMinion = (Minion *)temp_minion->GetComponent("Minion");
+                    realPtrMinion->Shoot(destination);
+                }
+                restTimer.Restart();
+                state = RESTING;
             }
-        }
+            else{
+                associated.box.x += dir.x;
+                associated.box.y += dir.y;
+            }
+            break;
     }
-
-    if(hp <= 0){
-        associated.RequestDelete();
-    }
-}
-
-void Alien::Render(){
-
 }
 
 bool Alien::Is(std::string type){
     return !type.compare("Alien");
 }
 
-Alien::Action::Action(ActionType type, float x, float y):type(type){
-    pos = Vec2(x,y);
+void Alien::NotifyCollision(GameObject& other){
+    Bullet* b = (Bullet*)other.GetComponent("Bullet");
+    if( b != nullptr && !b->targetsPlayer)
+        hp -= b->GetDamage();
 }

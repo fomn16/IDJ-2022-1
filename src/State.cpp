@@ -6,7 +6,9 @@
 #include "TileSet.hpp"
 #include "Alien.hpp"
 #include <math.h>
-
+#include "PenguinBody.hpp"
+#include "Collision.hpp"
+#include "Collider.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -31,7 +33,7 @@ void State::LoadAssets(){
     GameObject* background = new GameObject();
 
     //carregando sprite background
-    Sprite* spriteBackground = new Sprite(*background, "assets/img/ocean.jpg");
+    new Sprite(*background, "assets/img/ocean.jpg");
 
     //salvando no object array
     this->AddObject(background);
@@ -43,7 +45,7 @@ void State::LoadAssets(){
 	TileSet* tileSet = new TileSet(*tileMapObject, 64, 64, "assets/img/tileset.png");
 
 	//criando componente tileMap
-	TileMap* tileMap = new TileMap(*tileMapObject, "assets/map/tileMap.txt", tileSet);
+	new TileMap(*tileMapObject, "assets/map/tileMap.txt", tileSet);
 
 	//salvando no object array
     this->AddObject(tileMapObject);
@@ -56,15 +58,22 @@ void State::LoadAssets(){
     GameObject* alienObject = new GameObject(&camera);
 
     //criando alien
-    Alien* alien = new Alien(*alienObject, 10);
-
-    //quando o sprite é carregado, A classe Sprite corrige 
-    //a posição para que a box tenha seu centro na sua posição inicial 
-    alienObject->box.x = 512;
-    alienObject->box.y = 300;
+    new Alien(*alienObject, 10);
+    alienObject->box.SetCenter(Vec2(512,300));
 
     //salvando no object array
     this->AddObject(alienObject);
+
+    //Criando objeto Penguim
+    GameObject* penguinObject = new GameObject(&camera);
+
+    //criando Penguim
+    new PenguinBody(*penguinObject);
+    penguinObject->box.SetCenter(Vec2(704, 640));
+
+    //salvando no object array
+    this->AddObject(penguinObject);
+
 }
 
 void State::Update(float dt){
@@ -85,7 +94,31 @@ void State::Update(float dt){
             objectArray.erase(objectArray.begin() + i);
         }
     }
-}
+
+    //calculando colisões
+
+    std::vector<std::shared_ptr<GameObject>> colliderObjects;
+    for (int i = 0; i < (int)objectArray.size(); i++){
+        if(objectArray[i]->GetComponent("Collider") != nullptr)
+            colliderObjects.push_back(objectArray[i]);
+    }
+
+    Rect rect1,rect2;
+    float angle1,angle2;
+    for (int i = 0; i < (int)colliderObjects.size() - 1; i++){
+        rect1 = ((Collider*)colliderObjects[i]->GetComponent("Collider"))->box;
+        angle1 = colliderObjects[i]->angleDeg;
+        for (int j = i+1; j < (int)colliderObjects.size(); j++){
+            rect2 = ((Collider*)colliderObjects[j]->GetComponent("Collider"))->box;
+            angle2 = colliderObjects[j]->angleDeg;
+            if(Collision::IsColliding(rect1, rect2, angle1, angle2))
+            {
+                colliderObjects[i]->NotifyCollision(*colliderObjects[j].get());
+                colliderObjects[j]->NotifyCollision(*colliderObjects[i].get());
+            }
+        }
+    }
+ }
 
 void State::Render(){
     for (int i = 0; i < (int)objectArray.size(); i++){
@@ -100,13 +133,13 @@ void State::AddObject(int mouseX, int mouseY){
     inimigo->box.y = mouseY + camera.pos.y;
 
     //carregando sprite inimigo
-    Sprite* spriteInimigo = new Sprite(*inimigo, "assets/img/penguinface.png");
+    new Sprite(*inimigo, "assets/img/penguinface.png");
 
     //carregando som inimigo
-    Sound* somInimigo = new Sound(*inimigo, "assets/audio/boom.wav");
+    new Sound(*inimigo, "assets/audio/boom.wav");
 
     //carregando comportamento inimigo
-    Face* compInimigo = new Face(*inimigo);
+    new Face(*inimigo);
 
     this->AddObject(inimigo);
 }

@@ -2,6 +2,7 @@
 #include "Sprite.hpp"
 #include "Bullet.hpp"
 #include "Game.hpp"
+#include "Collider.hpp"
 
 Minion::Minion(GameObject& associated, std::weak_ptr<GameObject> alienCenter, float arcOffsetDeg) 
 : Component(associated), alienCenter(alienCenter), arc(arcOffsetDeg){
@@ -9,6 +10,7 @@ Minion::Minion(GameObject& associated, std::weak_ptr<GameObject> alienCenter, fl
     float scale = 1 + ((float)(std::rand() % 100))/200.;
     sprite->SetScaleX(scale, scale);
     associated.angleDeg = arcOffsetDeg;
+    new Collider(associated, Vec2(0.5,0.5));
 }
 
 void Minion::Update(float dt){
@@ -20,22 +22,16 @@ void Minion::Update(float dt){
     arc += ANG_SPEED*dt;
     Vec2 pos(INIT_DIST,0);
     pos = pos.GetRotated(arc);
-    associated.box.x = (alienCenter.lock()->box.x + alienCenter.lock()->box.w/2) + pos.x - associated.box.w/2;
-    associated.box.y = (alienCenter.lock()->box.y + alienCenter.lock()->box.h/2) + pos.y - associated.box.h/2;
-    associated.angleDeg = arc*180/M_PI;
-}
-
-void Minion::Render(){
-
+    associated.box.SetCenter(alienCenter.lock()->box.GetCenter() + pos);
+    associated.angleDeg = arc;
 }
 
 bool Minion::Is(std::string type){
     return !type.compare("Minion");
 }
 
-#include <fstream>
 void Minion::Shoot(Vec2 target){
-    Vec2 d = target - Vec2(associated.box.x - (associated.box.w/2), associated.box.y - (associated.box.h/2));
+    Vec2 d = target - associated.box.GetCenter();
     float a = atan2(d.y, d.x);
 
     GameObject* bulletGo = new GameObject(associated.camera);
@@ -43,9 +39,14 @@ void Minion::Shoot(Vec2 target){
     bulletGo->box.y = associated.box.y; 
     bulletGo->box.w = associated.box.w; 
     bulletGo->box.h = associated.box.h;
-    Bullet* bullet = new Bullet(*bulletGo, a, 500, 2, 500, "assets/img/minionbullet1.png");
+    new Bullet(*bulletGo, true, a, 500, 2, 2000, "assets/img/minionbullet2.png",  3);
     
     Game::GetInstance().GetState().AddObject(bulletGo);
 }
 
-void Minion::Start(){}
+void Minion::NotifyCollision(GameObject& other){
+    Bullet* b = (Bullet*)other.GetComponent("Bullet");
+    if(b != nullptr && !b ->targetsPlayer){
+        associated.RequestDelete();
+    }
+}

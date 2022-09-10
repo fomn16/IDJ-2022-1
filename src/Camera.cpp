@@ -15,8 +15,7 @@ void Camera::Unfollow(){
 
 void Camera::Update(float dt){
     if(focus != nullptr){
-        pos.x = focus->box.x + focus->box.w/2;
-        pos.y = focus->box.y + focus->box.h/2;
+        pos = focus->box.GetCenter() - Vec2(WIDTH/2,HEIGHT/2);
     }
     else{
         if(inputManager->IsKeyDown(LEFT_ARROW_KEY))

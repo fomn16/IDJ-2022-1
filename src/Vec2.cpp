@@ -25,6 +25,10 @@ Vec2 Vec2::operator*(const float f) const{
     return Vec2(x*f, y*f);
 }
 
+Vec2 Vec2::operator*(const Vec2& v) const{
+    return Vec2(x*v.x, y*v.y);
+}
+
 Vec2 Vec2::operator/(const float f) const{
     return Vec2(x/f, y/f);
 }

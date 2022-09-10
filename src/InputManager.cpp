@@ -97,3 +97,7 @@ int InputManager::GetMouseY(){
 bool InputManager::QuitRequested(){
     return quitRequested;
 }
+
+Vec2 InputManager::GetMousePos(){
+    return Vec2(mouseX, mouseY);
+}

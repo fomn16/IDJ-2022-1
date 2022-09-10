@@ -5,6 +5,9 @@
 #include "InputManager.hpp"
 #include <string>
 
+#define WIDTH 1024
+#define HEIGHT 600
+
 class Game{
     private:
     SDL_Window* window;
