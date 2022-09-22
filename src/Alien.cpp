@@ -24,12 +24,12 @@ Alien::~Alien(){
 }
 
 void Alien::Start(){
-    std::weak_ptr<GameObject> weak = Game::GetInstance().GetState().GetObjectPtr(&associated);
+    std::weak_ptr<GameObject> weak = Game::GetInstance().GetCurrentState().GetObjectPtr(&associated);
     float arcOffset = (2 * M_PI)/nMinions;
     for (int i = 0; i < nMinions; i++){
         GameObject* mO = new GameObject(associated.camera);
         new Minion(*mO, weak, i*arcOffset);
-        minionArray.push_back(Game::GetInstance().GetState().AddObject(mO));
+        minionArray.push_back(Game::GetInstance().GetCurrentState().AddObject(mO));
     }
 }
 
@@ -41,7 +41,7 @@ void Alien::Update(float dt){
         Sound* s = new Sound(*explosion, "assets/audio/boom.wav");
         s->Play();
         explosion->box.SetCenter(associated.box.GetCenter());
-        Game::GetInstance().GetState().AddObject(explosion);
+        Game::GetInstance().GetCurrentState().AddObject(explosion);
 
         associated.RequestDelete();
     }

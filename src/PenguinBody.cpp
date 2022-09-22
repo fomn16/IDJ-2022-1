@@ -29,9 +29,9 @@ PenguinBody::~PenguinBody(){
 
 void PenguinBody::Start(){
     GameObject* cannonGo = new GameObject(associated.camera);
-    new PenguinCannon(*cannonGo, Game::GetInstance().GetState().GetObjectPtr(&associated));
-    Game::GetInstance().GetState().AddObject(cannonGo);
-    pcannon = Game::GetInstance().GetState().GetObjectPtr(cannonGo);
+    new PenguinCannon(*cannonGo, Game::GetInstance().GetCurrentState().GetObjectPtr(&associated));
+    Game::GetInstance().GetCurrentState().AddObject(cannonGo);
+    pcannon = Game::GetInstance().GetCurrentState().GetObjectPtr(cannonGo);
 }
 
 void PenguinBody::Update(float dt){
@@ -42,7 +42,7 @@ void PenguinBody::Update(float dt){
         Sound* s = new Sound(*explosion, "assets/audio/boom.wav");
         s->Play();
         explosion->box.SetCenter(associated.box.GetCenter());
-        Game::GetInstance().GetState().AddObject(explosion);
+        Game::GetInstance().GetCurrentState().AddObject(explosion);
 
         if(pcannon.lock().get() != nullptr)
             pcannon.lock()->RequestDelete();

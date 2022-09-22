@@ -67,8 +67,8 @@ Game::Game(std::string title, int width, int height){
         fw.close();
         exit(1);
     }
-    //instancia state
-    state = new State();
+    //inicializa state
+    storedState = nullptr;
 
     inputManager = &InputManager::GetInstance();
 
@@ -84,8 +84,13 @@ Game& Game::GetInstance(){
 }
 
  Game::~Game(){
-    //TODO Destroi state
-    //state->QuitRequested();
+    if(storedState != nullptr)
+        storedState->~State();
+    stateStack.empty();
+
+    Resources::ClearImages();
+    Resources::ClearMusics();
+    Resources::ClearSounds();
 
     //encerra MIX
     Mix_CloseAudio();
@@ -102,8 +107,8 @@ Game& Game::GetInstance(){
     SDL_Quit();
  }
 
- State& Game::GetState(){
-    return *(state);
+ State& Game::GetCurrentState(){
+    return *(stateStack.top());
  }
 
  SDL_Renderer* Game::GetRenderer(){
@@ -111,13 +116,37 @@ Game& Game::GetInstance(){
  }
 
  void Game::Run(){
-    state->Start();
-    while(!state->QuitRequested()){
-        inputManager->Update();
-        state->Update(dt);
-        state->Render();
-        SDL_RenderPresent(renderer);
-        SDL_Delay(33);
+    if(storedState!=nullptr){
+        stateStack.push((std::unique_ptr<State>) storedState);
+        storedState = nullptr;
+        stateStack.top()->Start();
+    }
+    while(true){
+        if(stateStack.empty())
+            break;
+        else if (stateStack.top()->QuitRequested())
+            break;
+
+        if(stateStack.top()->PopRequested()){
+            stateStack.pop();
+            if(!stateStack.empty())
+                stateStack.top()->Resume();
+        }
+
+        if(storedState != nullptr){
+            if(!stateStack.empty())
+                stateStack.top()->Pause();
+            stateStack.push((std::unique_ptr<State>) storedState);
+            stateStack.top()->Start();
+        }
+
+        if(!stateStack.empty()){
+            inputManager->Update();
+            stateStack.top()->Update(dt);
+            stateStack.top()->Render();
+            SDL_RenderPresent(renderer);
+            SDL_Delay(33);
+        }
     }
 
     Resources::ClearImages();
@@ -134,4 +163,8 @@ Game& Game::GetInstance(){
 
  float Game::GetdeltaTime(){
     return dt;
+ }
+
+ void Game::Push(State* state){
+    storedState = state;
  }
