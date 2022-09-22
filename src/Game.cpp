@@ -122,15 +122,20 @@ Game& Game::GetInstance(){
         stateStack.top()->Start();
     }
     while(true){
-        if(stateStack.empty())
+        if(stateStack.empty()){
             break;
-        else if (stateStack.top()->QuitRequested())
+        }
+        else if (stateStack.top()->QuitRequested()){
+            while(!stateStack.empty())
+                stateStack.pop();
             break;
+        }
 
         if(stateStack.top()->PopRequested()){
             stateStack.pop();
             if(!stateStack.empty())
                 stateStack.top()->Resume();
+            Resources::ClearImages();
         }
 
         if(storedState != nullptr){
@@ -138,6 +143,7 @@ Game& Game::GetInstance(){
                 stateStack.top()->Pause();
             stateStack.push((std::unique_ptr<State>) storedState);
             stateStack.top()->Start();
+            storedState = nullptr;
         }
 
         if(!stateStack.empty()){

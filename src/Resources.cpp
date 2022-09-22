@@ -1,14 +1,15 @@
 #include "Resources.hpp"
 #include "Game.hpp"
 #include <fstream>
+#include <iostream>
 
-std::unordered_map<std::string, SDL_Texture*> Resources::imageTable;
+std::unordered_map<std::string, std::shared_ptr<SDL_Texture>> Resources::imageTable;
 std::unordered_map<std::string, Mix_Music*> Resources::musicTable;
 std::unordered_map<std::string, Mix_Chunk*> Resources::soundTable;
 
 //Lógica seguida em Clear: https://en.cppreference.com/w/cpp/container/unordered_map/erase
 
-SDL_Texture* Resources::GetImage(std::string file){
+std::shared_ptr<SDL_Texture> Resources::GetImage(std::string file){
     auto lookup = Resources::imageTable.find(file);
     if (lookup != Resources::imageTable.end())
         return lookup->second;
@@ -21,16 +22,24 @@ SDL_Texture* Resources::GetImage(std::string file){
         fw.close();
         exit(1);
     }
-
-    Resources::imageTable.insert({file, texture});   
-
-    return texture; 
+    std::shared_ptr<SDL_Texture>* sharedTexture = new std::shared_ptr<SDL_Texture>(texture,
+        [](SDL_Texture* p){
+            SDL_DestroyTexture(p);
+        }
+    );
+    texture = nullptr;
+    Resources::imageTable.insert({file, *sharedTexture});
+    return *sharedTexture; 
 }
 
 void Resources::ClearImages(){
-    for(auto it = Resources::imageTable.begin(); it != Resources::imageTable.end(); it++){
-        SDL_DestroyTexture(it->second);
-        it = Resources::imageTable.erase(it);
+    for(auto it = Resources::imageTable.begin(); it != Resources::imageTable.end();){
+        if(it->second.use_count()<=2){
+            it = Resources::imageTable.erase(it);
+        }
+        else{
+            it++;
+        }
     }
 }
 

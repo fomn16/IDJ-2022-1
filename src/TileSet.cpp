@@ -1,19 +1,20 @@
 #include "TileSet.hpp"
+#include <iostream>
 
-TileSet::TileSet(GameObject& associated, int tileWidth, int tileHeight, std::string file) : Component::Component(associated), tileSet(associated, file){
+TileSet::TileSet(GameObject& associated, int tileWidth, int tileHeight, std::string file) : Component::Component(associated){
+    new Sprite(associated,file);
     this->tileWidth = tileWidth;
     this->tileHeight = tileHeight;
-
-    rows = tileSet.GetHeight() / tileHeight;
-    columns = tileSet.GetWidth() / tileWidth;
+    rows = ((Sprite*)associated.GetComponent("Sprite"))->GetHeight() / tileHeight;
+    columns = ((Sprite*)associated.GetComponent("Sprite"))->GetWidth() / tileWidth;
 
     nTiles = rows * columns;
 }
 
 void TileSet::RenderTile(int index, int x, int y){
     if(index < (int)nTiles){
-        tileSet.SetClip((index % columns) * tileWidth, (index / columns) * tileHeight, tileWidth, tileHeight);
-        tileSet.Render(x, y);
+        ((Sprite*)associated.GetComponent("Sprite"))->SetClip((index % columns) * tileWidth, (index / columns) * tileHeight, tileWidth, tileHeight);
+        ((Sprite*)associated.GetComponent("Sprite"))->Render(x, y);
     }
 }  
 

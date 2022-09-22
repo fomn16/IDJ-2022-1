@@ -15,9 +15,8 @@ class TileSet : public Component{
         int GetTileHeight();
 
         bool Is(std::string type);
-    private:
-        Sprite tileSet;
 
+    private:
         int rows;
         int columns;
 

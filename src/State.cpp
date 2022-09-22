@@ -1,4 +1,5 @@
 #include "State.hpp"
+#include <iostream>
 
 State::State(){
 
@@ -46,6 +47,11 @@ void State::StartArray(){
 void State::UpdateArray(float dt){
     for (int i = 0; i < (int)objectArray.size(); i++){
         objectArray[i]->Update(dt);
+    }
+    for (int i = 0; i < (int)objectArray.size(); i++){
+        if(objectArray[i]->IsDead()){
+            objectArray.erase(objectArray.begin() + i);
+        }
     }
 }
 

@@ -10,6 +10,7 @@
 #include "Collision.hpp"
 #include "Collider.hpp"
 #include "Game.hpp"
+#include "TitleState.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -38,10 +39,10 @@ void StageState::LoadAssets(){
 	GameObject* tileMapObject = new GameObject(&Game::GetInstance().camera);
 
 	//criando tileSet
-	TileSet* tileSet = new TileSet(*tileMapObject, 64, 64, "assets/img/tileset.png");
-
+	new TileSet(*tileMapObject, 64, 64, "assets/img/tileset.png");
+    
 	//criando componente tileMap
-	new TileMap(*tileMapObject, "assets/map/tileMap.txt", tileSet);
+	new TileMap(*tileMapObject, "assets/map/tileMap.txt");
 
 	//salvando no object array
     this->AddObject(tileMapObject);
@@ -73,17 +74,14 @@ void StageState::LoadAssets(){
 
 void StageState::Update(float dt){
     Game::GetInstance().camera.Update(dt);
-    if(inputManager->QuitRequested() || inputManager->KeyPress(ESCAPE_KEY))
+    if(inputManager->QuitRequested())
 		quitRequested = true;
+    if(inputManager->KeyPress(ESCAPE_KEY)){
+        Game::GetInstance().Push((State*) (new TitleState()));
+        popRequested = true;
+    }
 
-    for (int i = 0; i < (int)objectArray.size(); i++){
-        objectArray[i]->Update(dt);
-    }
-    for (int i = 0; i < (int)objectArray.size(); i++){
-        if(objectArray[i]->IsDead()){
-            objectArray.erase(objectArray.begin() + i);
-        }
-    }
+    UpdateArray(dt);
 
     //calculando colisões
 
@@ -111,16 +109,12 @@ void StageState::Update(float dt){
  }
 
 void StageState::Render(){
-    for (int i = 0; i < (int)objectArray.size(); i++){
-        objectArray[i]->Render();
-    }
+    RenderArray();
 }
 
 void StageState::Start(){
     LoadAssets();
-    for (int i = 0; i < (int)objectArray.size(); i++){
-        objectArray[i]->Start();
-    }
+    StartArray();
     started = true;
 }
 
