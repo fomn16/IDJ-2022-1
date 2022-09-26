@@ -53,8 +53,10 @@ void State::LoadAssets(){
 }
 void State::Update(float dt){
     camera.Update(dt);
-    if(inputManager->QuitRequested() || inputManager->KeyPress(ESCAPE_KEY))
+    if(inputManager->QuitRequested() || inputManager->KeyPress(ESCAPE_KEY)){
+        music.Stop();
 		quitRequested = true;
+    }
 
 	if(inputManager->KeyPress(SPACE_KEY)){
         Vec2 objPos = Vec2( 200, 0 ).GetRotated( -M_PI + M_PI*(rand() % 1001)/500.0 ) + Vec2( inputManager->GetMouseX(), inputManager->GetMouseY() );

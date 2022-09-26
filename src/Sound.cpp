@@ -12,7 +12,7 @@ Sound::Sound(GameObject& associated, std::string file) : Sound::Sound(associated
 
 Sound::~Sound(){
     if(chunk != nullptr){
-        Stop();
+        //Stop();
     }
 }
 
