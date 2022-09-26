@@ -6,6 +6,7 @@
 std::unordered_map<std::string, std::shared_ptr<SDL_Texture>> Resources::imageTable;
 std::unordered_map<std::string, Mix_Music*> Resources::musicTable;
 std::unordered_map<std::string, Mix_Chunk*> Resources::soundTable;
+std::unordered_map<std::string, TTF_Font*> Resources::fontTable;
 
 //Lógica seguida em Clear: https://en.cppreference.com/w/cpp/container/unordered_map/erase
 
@@ -96,3 +97,30 @@ void Resources::ClearSounds(){
     }
 }
 
+
+TTF_Font* Resources::GetFont(std::string file, int fontSize){
+    auto lookup = Resources::fontTable.find(file + std::to_string(fontSize));
+    if (lookup != Resources::fontTable.end())
+        return lookup->second;
+
+    TTF_Font* font = TTF_OpenFont(file.c_str(), fontSize);
+
+    if(font == nullptr){
+        std::ofstream fw("logs.txt", std::ofstream::out);
+        fw<<"Erro ao carregar fonte: "<<SDL_GetError();
+        fw.close();
+        exit(1);
+    }
+
+    Resources::fontTable.insert({file + std::to_string(fontSize), font});   
+
+    return font;
+}
+
+
+void Resources::ClearFonts(){
+    for(auto it = Resources::fontTable.begin(); it != Resources::fontTable.end(); it++){
+        TTF_CloseFont(it->second);
+        it = Resources::fontTable.erase(it);
+    }
+}

@@ -11,12 +11,15 @@
 #include "Collider.hpp"
 #include "Game.hpp"
 #include "TitleState.hpp"
+#include "GameData.hpp"
+#include "EndState.hpp"
 
 #include <iostream>
 #include <fstream>
 
 StageState::StageState(){
 	inputManager = &InputManager::GetInstance();
+    LoadAssets();
 }
 
 StageState::~StageState(){
@@ -49,17 +52,20 @@ void StageState::LoadAssets(){
 
     //carregando e dando play na música 
     backgroundMusic.Open("assets/audio/stageState.ogg");
-    backgroundMusic.Play();
+    //backgroundMusic.Play();
 
-    //Criando objeto Alien
-    GameObject* alienObject = new GameObject(&Game::GetInstance().camera);
+    //criando aliens
+    for (int i=0; i < N_ALIENS; i++){
+        //Criando objeto Alien
+        GameObject* alienObject = new GameObject(&Game::GetInstance().camera);
+        
+        //criando alien
+        new Alien(*alienObject, 10, i);
+        alienObject->box.SetCenter(Vec2(std::rand() % MAP_WIDTH, std::rand() % MAP_HEIGHT));
 
-    //criando alien
-    new Alien(*alienObject, 10);
-    alienObject->box.SetCenter(Vec2(512,300));
-
-    //salvando no object array
-    this->AddObject(alienObject);
+        //salvando no object array
+        this->AddObject(alienObject);
+    }
 
     //Criando objeto Penguim
     GameObject* penguinObject = new GameObject(&Game::GetInstance().camera);
@@ -106,6 +112,22 @@ void StageState::Update(float dt){
             }
         }
     }
+
+
+    //esperando todos os sons acabarem de tocar para fechar o estado
+    bool isSoundPlaying = false;
+
+    for (int i = 0; i < (int)objectArray.size(); i++){
+        if(objectArray[i]->GetComponent("Sound") != nullptr)
+            isSoundPlaying = true;
+    }
+
+
+    if((PenguinBody::player == nullptr || Alien::alienCount == 0) && !isSoundPlaying){
+        GameData::playerVictory = Alien::alienCount == 0;
+        Game::GetInstance().Push((State*) (new EndState()));
+        popRequested = true;
+    }
  }
 
 void StageState::Render(){
@@ -113,8 +135,8 @@ void StageState::Render(){
 }
 
 void StageState::Start(){
-    LoadAssets();
     StartArray();
+    backgroundMusic.Play();
     started = true;
 }
 

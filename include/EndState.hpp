@@ -1,28 +1,25 @@
-#ifndef __TITLE_STATE_H__
-#define __TITLE_STATE_H__
+#ifndef __END_STATE_H__
+#define __END_STATE_H__
 
 #include "State.hpp"
+#include "Music.hpp"
 #include "InputManager.hpp"
-#include "Timer.hpp"
 
-class TitleState : public State{
+class EndState : public State{
     public:
-        TitleState();
-        ~TitleState();
+        EndState();
+        ~EndState();
 
         void LoadAssets();
         void Update(float dt);
         void Render();
-        void RenderArray();
 
         void Start();
         void Pause();
         void Resume();
-
     private:
-        Timer textBlinkTimer;
-        bool textEnabled = true;
+        Music backgroundMusic;
         InputManager* inputManager;                         //adicionando referência evitando GetInstace todo frame 
-};
 
-#endif
+};
+#endif  

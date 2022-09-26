@@ -12,7 +12,7 @@
 
 int Alien::alienCount = 0;
 
-Alien::Alien(GameObject& associated, int nMinions) : Component(associated), state(RESTING), hp(ALIEN_HP), nMinions(nMinions){
+Alien::Alien(GameObject& associated, int nMinions, float timeOffset = 0) : Component(associated), state(RESTING), hp(ALIEN_HP), nMinions(nMinions), timeOffset(timeOffset){
     new Sprite(associated, "assets/img/alien.png");
     new Collider(associated, Vec2(0.5,0.5));
     Alien::alienCount++;
@@ -62,7 +62,7 @@ void Alien::Update(float dt){
     switch (state)
     {
         case RESTING:
-            if(restTimer.Get() >= ALIEN_REST_TIME){
+            if(restTimer.Get() >= ALIEN_REST_TIME + timeOffset){
                 destination = PenguinBody::player->AssociatedPosition();
                 state = MOVING;
             }

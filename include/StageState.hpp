@@ -1,6 +1,8 @@
 #ifndef __STAGE_STATE_H__
 #define __STAGE_STATE_H__
 
+#define N_ALIENS 5
+
 #include "SDL2/SDL.h"
 #include "Sprite.hpp"
 #include "Music.hpp"

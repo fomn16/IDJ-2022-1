@@ -2,6 +2,7 @@
 #include "Resources.hpp"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_mixer.h"
+#include "SDL2/SDL_ttf.h"
 #include <iostream>
 #include <fstream>
 
@@ -67,6 +68,15 @@ Game::Game(std::string title, int width, int height){
         fw.close();
         exit(1);
     }
+
+    //inicia SDL_ttf
+    if (TTF_Init()){
+        std::ofstream fw("logs.txt", std::ofstream::out);
+        fw<<"Erro ao instanciar SDL_ttf";
+        fw.close();
+        exit(1);
+    }
+
     //inicializa state
     storedState = nullptr;
 
@@ -91,6 +101,7 @@ Game& Game::GetInstance(){
     Resources::ClearImages();
     Resources::ClearMusics();
     Resources::ClearSounds();
+    Resources::ClearFonts();
 
     //encerra MIX
     Mix_CloseAudio();
@@ -102,6 +113,7 @@ Game& Game::GetInstance(){
     //destrui renderizador e janela
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_Quit();
 
     //encerra SDL
     SDL_Quit();
@@ -158,6 +170,7 @@ Game& Game::GetInstance(){
     Resources::ClearImages();
     Resources::ClearMusics();
     Resources::ClearSounds();
+    Resources::ClearFonts();
  }
 
  

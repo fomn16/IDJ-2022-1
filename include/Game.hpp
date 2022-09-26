@@ -9,6 +9,9 @@
 #define WIDTH 1024
 #define HEIGHT 600
 
+#define MAP_WIDTH 1408
+#define MAP_HEIGHT 1280
+
 class Game{
     private:
     SDL_Window* window;

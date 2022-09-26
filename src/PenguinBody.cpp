@@ -66,6 +66,16 @@ void PenguinBody::Update(float dt){
     speed = Vec2(linearSpeed, 0).GetRotated(angle);
     associated.box.x += speed.x;
     associated.box.y += speed.y;
+
+    //limitando movimento ao mapa
+    if(associated.box.x > MAP_WIDTH)
+        associated.box.x = MAP_WIDTH;
+    if(associated.box.x < 0)
+        associated.box.x = 0;
+    if(associated.box.y > MAP_HEIGHT)
+        associated.box.y = MAP_HEIGHT;
+    if(associated.box.y < 0)
+        associated.box.y = 0;
     
     associated.angleDeg = angle;
 }
