@@ -1,38 +1,36 @@
 #ifndef __STATE_H__
 #define __STATE_H__
 
-#include "SDL2/SDL.h"
-#include "Sprite.hpp"
-#include "Music.hpp"
-#include "InputManager.hpp"
 #include "GameObject.hpp"
-#include "Camera.hpp"
-
-#include <memory>
-#include <vector>
 
 class State{
     public:
         State();
-        ~State();
-        bool QuitRequested();
-        void LoadAssets();
-        void Update(float dt);
-        void Render();
-        void Start();
-        std::weak_ptr<GameObject> AddObject(GameObject* go);
-        std::weak_ptr<GameObject> GetObjectPtr(GameObject* go);
+        virtual ~State();
 
-    private:
-        void AddObject(int mouseX, int mouseY);
-        
-        Music music;
-        bool quitRequested;
-        std::vector<std::shared_ptr<GameObject>> objectArray;
-        InputManager* inputManager;                         //adicionando referência evitando GetInstace todo frame
-        Camera camera;
+        virtual void LoadAssets() = 0;
+        virtual void Update(float dt) = 0;
+        virtual void Render() = 0;
+
+        virtual void Start() = 0;
+        virtual void Pause() = 0;
+        virtual void Resume() = 0;
+
+        virtual std::weak_ptr<GameObject> AddObject(GameObject* object);
+        virtual std::weak_ptr<GameObject> GetObjectPtr(GameObject* object);
+
+        bool PopRequested();
+        bool QuitRequested();
+    protected:
+        void StartArray();
+        virtual void UpdateArray(float dt);
+        virtual void RenderArray();
+
+        bool popRequested = false;
+        bool quitRequested = false;
         bool started = false;
-        
-};  
+
+        std::vector<std::shared_ptr<GameObject>> objectArray;
+};
 
 #endif

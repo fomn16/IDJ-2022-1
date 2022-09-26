@@ -32,7 +32,7 @@ class Sprite : public Component{
         void SetFrameCount(int frameCount);
         void SetFrameTime(float frameTime);
     private:
-        SDL_Texture* texture;
+        std::shared_ptr<SDL_Texture> texture;
         int width;
         int height;
         SDL_Rect clipRect;

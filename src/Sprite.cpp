@@ -22,12 +22,12 @@ Sprite::Sprite(GameObject& associated, std::string file,
 }
 
 Sprite::~Sprite(){
+    texture = nullptr;
 }
 
 void Sprite::Open(std::string file){
     texture = Resources::GetImage(file);
-    
-    if (SDL_QueryTexture(texture, nullptr, nullptr, &(width), &(height))){
+    if (SDL_QueryTexture(texture.get(), nullptr, nullptr, &(width), &(height))){
         std::ofstream fw("logs.txt", std::ofstream::out);
         fw<<"Erro ao carregar sprite: "<<SDL_GetError();
         fw.close();
@@ -68,7 +68,7 @@ void Sprite::Render (int x, int y){
 
     if(SDL_RenderCopyEx(
                     Game::GetInstance().GetRenderer(),
-                    texture,
+                    texture.get(),
                     &(clipRect),
                     &dstRect,
                     associated.angleDeg*180/M_PI,

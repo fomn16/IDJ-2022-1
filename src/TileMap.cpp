@@ -1,7 +1,8 @@
 #include "TileMap.hpp"
 #include <fstream>
+#include <iostream>
 
-TileMap::TileMap(GameObject& associated, std::string file, TileSet* tileSet) : Component::Component(associated), tileSet(tileSet)
+TileMap::TileMap(GameObject& associated, std::string file) : Component::Component(associated)
 {
     Load(file);
 }
@@ -26,10 +27,7 @@ void TileMap::Load(std::string file){
         tileFile >> ignore >> tileIndex;
         tileMatrix.push_back(tileIndex - 1);
     }
-}
-
-void TileMap::SetTileSet(TileSet* tileSet){
-    this->tileSet = tileSet;
+    tileFile.close();
 }
 
 int& TileMap::At(int x, int y, int z){
@@ -44,15 +42,15 @@ void TileMap::Render(){
 
 
 void TileMap::RenderLayer(int layer, int cameraX, int cameraY){
-    int tileW = tileSet->GetTileWidth();
-    int tileH = tileSet->GetTileHeight();
+    int tileW = ((TileSet*)associated.GetComponent("TileSet"))->GetTileWidth();
+    int tileH = ((TileSet*)associated.GetComponent("TileSet"))->GetTileHeight();
     int tileIndex;
 
     for(int i = 0; i < mapWidth; i++){
         for (int j = 0; j < mapHeight; j++){
             tileIndex = At(i, j, layer);
             if(tileIndex >= 0){
-                tileSet->RenderTile(tileIndex, i*tileW - cameraX, j*tileH - cameraY);
+                ((TileSet*)associated.GetComponent("TileSet"))->RenderTile(tileIndex, i*tileW - cameraX, j*tileH - cameraY);
             }
         }
     }

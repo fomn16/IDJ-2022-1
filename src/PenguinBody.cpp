@@ -29,9 +29,9 @@ PenguinBody::~PenguinBody(){
 
 void PenguinBody::Start(){
     GameObject* cannonGo = new GameObject(associated.camera);
-    new PenguinCannon(*cannonGo, Game::GetInstance().GetState().GetObjectPtr(&associated));
-    Game::GetInstance().GetState().AddObject(cannonGo);
-    pcannon = Game::GetInstance().GetState().GetObjectPtr(cannonGo);
+    new PenguinCannon(*cannonGo, Game::GetInstance().GetCurrentState().GetObjectPtr(&associated));
+    Game::GetInstance().GetCurrentState().AddObject(cannonGo);
+    pcannon = Game::GetInstance().GetCurrentState().GetObjectPtr(cannonGo);
 }
 
 void PenguinBody::Update(float dt){
@@ -42,7 +42,7 @@ void PenguinBody::Update(float dt){
         Sound* s = new Sound(*explosion, "assets/audio/boom.wav");
         s->Play();
         explosion->box.SetCenter(associated.box.GetCenter());
-        Game::GetInstance().GetState().AddObject(explosion);
+        Game::GetInstance().GetCurrentState().AddObject(explosion);
 
         if(pcannon.lock().get() != nullptr)
             pcannon.lock()->RequestDelete();
@@ -66,6 +66,16 @@ void PenguinBody::Update(float dt){
     speed = Vec2(linearSpeed, 0).GetRotated(angle);
     associated.box.x += speed.x;
     associated.box.y += speed.y;
+
+    //limitando movimento ao mapa
+    if(associated.box.x > MAP_WIDTH)
+        associated.box.x = MAP_WIDTH;
+    if(associated.box.x < 0)
+        associated.box.x = 0;
+    if(associated.box.y > MAP_HEIGHT)
+        associated.box.y = MAP_HEIGHT;
+    if(associated.box.y < 0)
+        associated.box.y = 0;
     
     associated.angleDeg = angle;
 }

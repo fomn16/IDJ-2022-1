@@ -41,7 +41,7 @@ void Minion::Shoot(Vec2 target){
     bulletGo->box.h = associated.box.h;
     new Bullet(*bulletGo, true, a, 500, 2, 2000, "assets/img/minionbullet2.png",  3);
     
-    Game::GetInstance().GetState().AddObject(bulletGo);
+    Game::GetInstance().GetCurrentState().AddObject(bulletGo);
 }
 
 void Minion::NotifyCollision(GameObject& other){

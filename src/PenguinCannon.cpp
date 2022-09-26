@@ -51,7 +51,7 @@ void PenguinCannon::Shoot(){
 
 
     new Bullet(*bulletGo, false, angle, 500, PCANNON_DAMAGE, 500, "assets/img/penguinbullet.png", 4);
-    Game::GetInstance().GetState().AddObject(bulletGo);
+    Game::GetInstance().GetCurrentState().AddObject(bulletGo);
 }
 
 PenguinCannon::~PenguinCannon(){}

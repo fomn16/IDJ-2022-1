@@ -12,7 +12,7 @@
 
 int Alien::alienCount = 0;
 
-Alien::Alien(GameObject& associated, int nMinions) : Component(associated), state(RESTING), hp(ALIEN_HP), nMinions(nMinions){
+Alien::Alien(GameObject& associated, int nMinions, float timeOffset = 0) : Component(associated), state(RESTING), hp(ALIEN_HP), nMinions(nMinions), timeOffset(timeOffset){
     new Sprite(associated, "assets/img/alien.png");
     new Collider(associated, Vec2(0.5,0.5));
     Alien::alienCount++;
@@ -24,12 +24,12 @@ Alien::~Alien(){
 }
 
 void Alien::Start(){
-    std::weak_ptr<GameObject> weak = Game::GetInstance().GetState().GetObjectPtr(&associated);
+    std::weak_ptr<GameObject> weak = Game::GetInstance().GetCurrentState().GetObjectPtr(&associated);
     float arcOffset = (2 * M_PI)/nMinions;
     for (int i = 0; i < nMinions; i++){
         GameObject* mO = new GameObject(associated.camera);
         new Minion(*mO, weak, i*arcOffset);
-        minionArray.push_back(Game::GetInstance().GetState().AddObject(mO));
+        minionArray.push_back(Game::GetInstance().GetCurrentState().AddObject(mO));
     }
 }
 
@@ -41,7 +41,7 @@ void Alien::Update(float dt){
         Sound* s = new Sound(*explosion, "assets/audio/boom.wav");
         s->Play();
         explosion->box.SetCenter(associated.box.GetCenter());
-        Game::GetInstance().GetState().AddObject(explosion);
+        Game::GetInstance().GetCurrentState().AddObject(explosion);
 
         associated.RequestDelete();
     }
@@ -62,7 +62,7 @@ void Alien::Update(float dt){
     switch (state)
     {
         case RESTING:
-            if(restTimer.Get() >= ALIEN_REST_TIME){
+            if(restTimer.Get() >= ALIEN_REST_TIME + timeOffset){
                 destination = PenguinBody::player->AssociatedPosition();
                 state = MOVING;
             }

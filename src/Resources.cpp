@@ -1,14 +1,16 @@
 #include "Resources.hpp"
 #include "Game.hpp"
 #include <fstream>
+#include <iostream>
 
-std::unordered_map<std::string, SDL_Texture*> Resources::imageTable;
+std::unordered_map<std::string, std::shared_ptr<SDL_Texture>> Resources::imageTable;
 std::unordered_map<std::string, Mix_Music*> Resources::musicTable;
 std::unordered_map<std::string, Mix_Chunk*> Resources::soundTable;
+std::unordered_map<std::string, TTF_Font*> Resources::fontTable;
 
 //Lógica seguida em Clear: https://en.cppreference.com/w/cpp/container/unordered_map/erase
 
-SDL_Texture* Resources::GetImage(std::string file){
+std::shared_ptr<SDL_Texture> Resources::GetImage(std::string file){
     auto lookup = Resources::imageTable.find(file);
     if (lookup != Resources::imageTable.end())
         return lookup->second;
@@ -21,16 +23,24 @@ SDL_Texture* Resources::GetImage(std::string file){
         fw.close();
         exit(1);
     }
-
-    Resources::imageTable.insert({file, texture});   
-
-    return texture; 
+    std::shared_ptr<SDL_Texture>* sharedTexture = new std::shared_ptr<SDL_Texture>(texture,
+        [](SDL_Texture* p){
+            SDL_DestroyTexture(p);
+        }
+    );
+    texture = nullptr;
+    Resources::imageTable.insert({file, *sharedTexture});
+    return *sharedTexture; 
 }
 
 void Resources::ClearImages(){
-    for(auto it = Resources::imageTable.begin(); it != Resources::imageTable.end(); it++){
-        SDL_DestroyTexture(it->second);
-        it = Resources::imageTable.erase(it);
+    for(auto it = Resources::imageTable.begin(); it != Resources::imageTable.end();){
+        if(it->second.use_count()<=2){
+            it = Resources::imageTable.erase(it);
+        }
+        else{
+            it++;
+        }
     }
 }
 
@@ -87,3 +97,30 @@ void Resources::ClearSounds(){
     }
 }
 
+
+TTF_Font* Resources::GetFont(std::string file, int fontSize){
+    auto lookup = Resources::fontTable.find(file + std::to_string(fontSize));
+    if (lookup != Resources::fontTable.end())
+        return lookup->second;
+
+    TTF_Font* font = TTF_OpenFont(file.c_str(), fontSize);
+
+    if(font == nullptr){
+        std::ofstream fw("logs.txt", std::ofstream::out);
+        fw<<"Erro ao carregar fonte: "<<SDL_GetError();
+        fw.close();
+        exit(1);
+    }
+
+    Resources::fontTable.insert({file + std::to_string(fontSize), font});   
+
+    return font;
+}
+
+
+void Resources::ClearFonts(){
+    for(auto it = Resources::fontTable.begin(); it != Resources::fontTable.end(); it++){
+        TTF_CloseFont(it->second);
+        it = Resources::fontTable.erase(it);
+    }
+}
